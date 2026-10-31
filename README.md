@@ -45,10 +45,13 @@ them one at a time: safes, sea chests, crates, barrels, wheels, a generator, ten
 
 Up to three mods, each needed on the server and the clients:
 
-- **@HandCart**: the hand truck. Needs nothing but DayZ (1.30).
-- **@HandCart_Expansion**: lets it carry Expansion's safes. Needs
+- **@HandCart** ([Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3830655667)):
+  the hand truck. Needs nothing but DayZ (1.30).
+- **@HandCart_Expansion** ([Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3830656388)):
+  lets it carry Expansion's safes. Needs
   DayZ-Expansion-BaseBuilding. Leave it out if you don't run Expansion.
-- **@HandCart_LifeMachines**: lets it carry the stove and sewing machine from
+- **@HandCart_LifeMachines** ([Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3830657046)):
+  lets it carry the stove and sewing machine from
   [Life Machines](https://steamcommunity.com/sharedfiles/filedetails/?id=3741693087),
   which otherwise can't be moved once deployed. They can also go into a vehicle's
   cargo (no other). Needs Life Machines. Leave it out if you don't run it.
@@ -92,8 +95,9 @@ tools/build.sh                                            # binarize into build/
 ```
 
 `tools/build.sh` runs DayZ Tools' Binarize under Proton on Linux and stages the
-mod in `build/HandCart`. Packing and signing is done separately (the author's DayZMissions tooling,
-`tools/build_mod.py`), which also runs the test mission.
+mod in `build/HandCart`. Packing, signing and publishing are done separately, with the
+author's DayZMissions tooling (`tools/build_mod.py`, `tools/workshop_publish.sh`, which
+read each mod's `workshop.*` files and `preview.png`), which also runs the test mission.
 
 ## Testing
 
