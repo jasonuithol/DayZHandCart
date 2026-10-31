@@ -1,13 +1,16 @@
-//! One kind of load the truck can carry, as a stack of attachment slots filled bottom-up.
+//! One kind of load the truck can carry, as a stack of attachment slots filled bottom-up,
+//! or (furniture) a slot per item of which only m_Max are used at once.
 class HandTruckLoadKind
 {
 	string m_Name;
 	ref array<int> m_Slots = new array<int>;
+	int m_Max;   //!< how many at once; the slot count unless set lower
 
 	//! count 1: a single slot named slotName; otherwise slotName1..slotNameN
 	void HandTruckLoadKind(string name, string slotName, int count)
 	{
 		m_Name = name;
+		m_Max = count;
 		if (count == 1)
 		{
 			m_Slots.Insert(InventorySlots.GetSlotIdFromString(slotName));
@@ -15,6 +18,16 @@ class HandTruckLoadKind
 		}
 		for (int i = 1; i <= count; i++)
 			m_Slots.Insert(InventorySlots.GetSlotIdFromString(slotName + i.ToString()));
+	}
+
+	//! A kind whose items each have their own slot (slotPrefix + suffix), max at once
+	static HandTruckLoadKind OfSlots(string name, string slotPrefix, TStringArray suffixes, int max)
+	{
+		HandTruckLoadKind kind = new HandTruckLoadKind(name, slotPrefix + suffixes[0], 1);
+		for (int i = 1; i < suffixes.Count(); i++)
+			kind.m_Slots.Insert(InventorySlots.GetSlotIdFromString(slotPrefix + suffixes[i]));
+		kind.m_Max = max;
+		return kind;
 	}
 
 	bool HasSlot(int slotId)
@@ -47,6 +60,9 @@ class HandTruckLoad
 			s_Kinds.Insert(new HandTruckLoadKind("Barrel", "HandCart_Barrel", 1));
 			s_Kinds.Insert(new HandTruckLoadKind("Stove", "HandCart_Stove", 1));
 			s_Kinds.Insert(new HandTruckLoadKind("SewingMachine", "HandCart_SewingMachine", 1));
+			TStringArray furniture = {"Sofa", "Table", "OfficeDesk", "MedicalTable", "Shelf", "WorkbenchOld", "Wardrobe", "Cupboard",
+				"StretcherGreen", "StretcherRed", "Fridge", "TV", "PC"};
+			s_Kinds.Insert(HandTruckLoadKind.OfSlots("Furniture", "HandCart_Furniture_", furniture, 1));
 		}
 		return s_Kinds;
 	}
@@ -103,8 +119,8 @@ class HandTruckLoad
 		return null;
 	}
 
-	//! Rule check used by the truck's CanReceiveAttachment: right kind for the slot, and
-	//! the same kind as anything already loaded.
+	//! Rule check used by the truck's CanReceiveAttachment: right kind for the slot, the
+	//! same kind as anything already loaded, and room for another.
 	static bool Accepts(EntityAI truck, EntityAI item, int slotId)
 	{
 		HandTruckLoadKind kind = GetKindOf(item);
@@ -112,7 +128,9 @@ class HandTruckLoad
 			return false;
 
 		HandTruckLoadKind loaded = GetLoadedKind(truck);
-		return !loaded || loaded == kind;
+		if (!loaded)
+			return true;
+		return loaded == kind && truck.GetInventory().AttachmentCount() < kind.m_Max;
 	}
 
 	//! Lowest free slot item can go into, or InventorySlots.INVALID if it can't be loaded
@@ -124,6 +142,8 @@ class HandTruckLoad
 			return InventorySlots.INVALID;
 
 		GameInventory inv = truck.GetInventory();
+		if (GetLoadedKind(truck) == kind && inv.AttachmentCount() >= kind.m_Max)
+			return InventorySlots.INVALID;
 		for (int i = 0; i < kind.m_Slots.Count(); i++)
 		{
 			int slotId = kind.m_Slots[i];

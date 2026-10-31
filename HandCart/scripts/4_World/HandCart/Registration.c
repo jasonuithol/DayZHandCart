@@ -10,6 +10,7 @@ modded class ActionConstructor
 		actions.Insert(ActionHandTruckPlace);
 		actions.Insert(ActionHandTruckLoadFromVehicle);
 		actions.Insert(ActionHandTruckUnloadIntoVehicle);
+		actions.Insert(ActionHandTruckTakeFurniture);
 	}
 }
 

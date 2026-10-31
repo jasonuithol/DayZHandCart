@@ -20,6 +20,9 @@ A3OB_MODULE = "bl_ext.user_default.Arma3ObjectBuilder"
 PROXY_MODELS = (["handcart_safe", "handcart_dualwheel", "handcart_generator", "handcart_barrel",
                  "handcart_stove", "handcart_sewingmachine"]
                 + [f"handcart_canopytent{i}" for i in range(1, 4)]
+                + [f"handcart_furniture_{name}" for name in ("sofa", "table", "officedesk", "medicaltable",
+                   "shelf", "workbenchold", "wardrobe", "cupboard", "stretchergreen", "stretcherred",
+                   "fridge", "tv", "pc")]
                 + [f"handcart_seachest{i}" for i in range(1, 3)]
                 + [f"handcart_crate{i}" for i in range(1, 5)]
                 + [f"handcart_truckwheel{i}" for i in range(1, 3)]

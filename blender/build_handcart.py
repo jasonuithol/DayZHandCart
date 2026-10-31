@@ -325,6 +325,36 @@ SEWING_HALF_DEPTH = 0.29  # Life Machines sewing machine: 1.15 wide, 1.27 tall, 
 GENERATOR_HALF_DEPTH = 0.205  # power generator: 0.70 wide, 0.70 tall, origin at the bottom
 TENT_R = 0.16             # packed canopy tent: not measurable on a server (its packed
                           # state has no collision box), a guessed bundle radius
+# Furniture taken from the map (HandTruckFurniture.c): model-space collision boxes measured
+# in game, (min x, y, z), (max x, y, z), item axes X right, Y up, Z forward. Origins differ
+# (some at the bottom, some at the centre), so each piece gets its own slot, placed to
+# stand on the nose plate against the frame with its long side across the truck.
+FURNITURE_BOXES = {
+    "sofa": ((-0.880, -0.412, -0.433), (0.888, 0.374, 0.507)),
+    "table": ((-0.581, -0.419, -0.742), (0.582, 0.450, 0.742)),
+    "officedesk": ((-0.898, -0.403, -0.381), (0.892, 0.418, 0.421)),
+    "medicaltable": ((-0.508, 0.0, -0.244), (0.549, 1.017, 0.290)),
+    "shelf": ((-0.264, -0.003, -0.476), (0.264, 1.064, 0.474)),
+    "workbenchold": ((-1.245, -0.462, -0.495), (1.245, 0.468, 0.495)),
+    "wardrobe": ((-0.776, 0.0, -0.398), (0.776, 2.103, 1.059)),
+    "cupboard": ((-0.682, 0.0, -0.284), (0.682, 1.927, 0.869)),
+    "stretchergreen": ((-0.371, -0.240, -1.127), (0.372, 0.249, 1.128)),
+    "stretcherred": ((-0.371, -0.240, -1.127), (0.372, 0.249, 1.128)),
+    "fridge": ((-0.288, 0.0, -0.280), (0.272, 1.393, 0.280)),
+    "tv": ((-0.377, 0.0, -0.178), (0.376, 0.534, 0.201)),
+    "pc": ((-0.306, 0.0, -0.311), (0.262, 0.355, 0.333)),
+}
+
+
+def furniture_proxy(box):
+    """(position, rotation) for a piece: an item's X, Y, Z lie along the proxy's Blender
+    X, Z, Y; a piece deeper than it is wide is turned 90 degrees so it lies across."""
+    (x0, y0, z0), (x1, y1, z1) = box
+    if z1 - z0 > x1 - x0:
+        return ((z0 + z1) / 2, LOAD_BACK - x0, DECK - y0), (0, 0, 90)
+    return (-(x0 + x1) / 2, LOAD_BACK - z0, DECK - y0), (0, 0, 0)
+
+
 LOAD_PROXIES = {
     # Safe standing on the nose plate, door facing away from the frame
     "handcart_safe": [((0, LOAD_BACK + SAFE_HALF_DEPTH, DECK), (0, 0, 0))],
@@ -347,6 +377,8 @@ LOAD_PROXIES = {
     # table's long side across the truck
     "handcart_stove": [((0, LOAD_BACK + STOVE_HALF_DEPTH, DECK), (0, 0, 0))],
     "handcart_sewingmachine": [((0, LOAD_BACK + SEWING_HALF_DEPTH, DECK), (0, 0, 0))],
+    # Furniture, one slot per piece
+    **{f"handcart_furniture_{name}": [furniture_proxy(box)] for name, box in FURNITURE_BOXES.items()},
     # Generator standing on the nose plate, its long side across the truck
     "handcart_generator": [((0, LOAD_BACK + GENERATOR_HALF_DEPTH, DECK + 0.014), (0, 0, 0))],
     # Packed canopy tents lying across the truck, stacked three high

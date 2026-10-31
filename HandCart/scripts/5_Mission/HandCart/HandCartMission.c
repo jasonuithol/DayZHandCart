@@ -4,6 +4,7 @@ modded class MissionServer
 	{
 		super.OnInit();
 		HandCartSettings.LoadServer();
+		HandTruckFurniture.LoadServer();
 	}
 
 	override void InvokeOnConnect(PlayerBase player, PlayerIdentity identity)
@@ -13,6 +14,7 @@ modded class MissionServer
 		ScriptRPC rpc = new ScriptRPC();
 		HandCartSettings.Get().Write(rpc);
 		rpc.Send(player, HandCartSettings.RPC_SYNC, true, identity);
+		HandTruckFurniture.SyncClient(player);
 	}
 }
 

@@ -345,10 +345,15 @@ class CustomMission: MissionServer
 	void LogBoxes()
 	{
 		TStringArray types = {"ExpansionSafeLarge", "ExpansionSafeMedium", "ExpansionSafeMini", "SeaChest", "WoodenCrate",
-			"Truck_01_WheelDouble", "Truck_01_Wheel", "Offroad_02_Wheel", "HatchbackWheel", "CivSedanWheel", "Sedan_02_Wheel", "Hatchback_02_Wheel", "PowerGenerator", "PartyTent", "Barrel_Blue", "BarrelHoles_Blue", "HM_Stove", "HM_Sewing_Machine"};
+			"Truck_01_WheelDouble", "Truck_01_Wheel", "Offroad_02_Wheel", "HatchbackWheel", "CivSedanWheel", "Sedan_02_Wheel", "Hatchback_02_Wheel", "PowerGenerator", "PartyTent", "Barrel_Blue", "BarrelHoles_Blue", "HM_Stove", "HM_Sewing_Machine",
+			"HandCart_Furniture_Sofa", "HandCart_Furniture_Table", "HandCart_Furniture_OfficeDesk", "HandCart_Furniture_MedicalTable", "HandCart_Furniture_Shelf",
+			"HandCart_Furniture_Workbench", "HandCart_Furniture_WorkbenchOld", "HandCart_Furniture_Wardrobe", "HandCart_Furniture_Cupboard", "HandCart_Furniture_StretcherGreen",
+			"HandCart_Furniture_StretcherRed", "HandCart_Furniture_Fridge", "HandCart_Furniture_TV", "HandCart_Furniture_PC"};
 		for (int i = 0; i < types.Count(); i++)
 		{
 			EntityAI e = Drop(types[i], Verge(20, i * 3));
+			if (!e)
+				continue;
 			vector box[2];
 			bool coll = e.GetCollisionBox(box);
 			vector bb[2];

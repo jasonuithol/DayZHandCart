@@ -1,0 +1,15 @@
+# Nasdara furniture test; same mods as handcart.chernarusplus.
+# <workshop id> <@Name>, in load order. Expansion BaseBuilding for its safes (and the
+# HandCart_Expansion add-on that lets the truck carry them); ours are built locally from
+# mods/HandCart (a symlink to ~/Projects/DayZHandCart/build/HandCart, staged by
+# tools/build.sh there), mods/HandCart_Expansion and mods/HandCart_LifeMachines. Life
+# Machines (huntermods.online) for its stove and sewing machine.
+1559212036 @CF
+2545327648 @DabsFramework
+2116157322 @DayZ-Expansion-Licensed
+2291785308 @DayZ-Expansion-Core
+2792982513 @DayZ-Expansion-BaseBuilding
+3741693087 @Life-Machines
+local @HandCart
+local @HandCart_Expansion
+local @HandCart_LifeMachines

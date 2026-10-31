@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Rebuild HandCart and (re)start the local test (extra server launch parameters in
-# SERVER_ARGS, e.g. -doInvMoveLog): stops any running DayZ server and client,
+# SERVER_ARGS, e.g. -doInvMoveLog; another mission in MISSION, e.g. handcart.nasdara):
+# stops any running DayZ server and client,
 # then starts the handcart mission's server (fresh persistence) and a client connected to
 # it, through ~/Projects/DayZMissions. Returns once the client has finished loading in, or
 # after WAIT seconds (default 300).
@@ -28,7 +29,7 @@ for _ in $(seq 1 60); do
 done
 
 start=$(date +%s)
-(cd "$MISSIONS" && WIPE=1 nohup tools/run_server.sh handcart ${SERVER_ARGS:-} >"$LOGS/server.out" 2>&1 &)
+(cd "$MISSIONS" && WIPE=1 nohup tools/run_server.sh "${MISSION:-handcart}" ${SERVER_ARGS:-} >"$LOGS/server.out" 2>&1 &)
 for _ in $(seq 1 180); do
 	f=$(ls -t "$SERVER_PROFILES"/script_*.log 2>/dev/null | head -n1)
 	if [ -n "$f" ] && [ "$(stat -c %Y "$f")" -ge "$start" ]; then
@@ -39,7 +40,7 @@ for _ in $(seq 1 180); do
 done
 echo "server up"
 
-(cd "$MISSIONS" && nohup tools/run_client.sh handcart >"$LOGS/client.out" 2>&1 &)
+(cd "$MISSIONS" && nohup tools/run_client.sh "${MISSION:-handcart}" >"$LOGS/client.out" 2>&1 &)
 for _ in $(seq 1 "${WAIT:-300}"); do
 	f=$(ls -t "$CLIENT_LOGS"/script_*.log 2>/dev/null | head -n1)
 	if [ -n "$f" ] && [ "$(stat -c %Y "$f")" -ge "$start" ]; then

@@ -78,7 +78,20 @@ class CfgVehicles
 			"HandCart_CanopyTent3",
 			"HandCart_Barrel",
 			"HandCart_Stove",
-			"HandCart_SewingMachine"
+			"HandCart_SewingMachine",
+			"HandCart_Furniture_Sofa",
+			"HandCart_Furniture_Table",
+			"HandCart_Furniture_OfficeDesk",
+			"HandCart_Furniture_MedicalTable",
+			"HandCart_Furniture_Shelf",
+			"HandCart_Furniture_WorkbenchOld",
+			"HandCart_Furniture_Wardrobe",
+			"HandCart_Furniture_Cupboard",
+			"HandCart_Furniture_StretcherGreen",
+			"HandCart_Furniture_StretcherRed",
+			"HandCart_Furniture_Fridge",
+			"HandCart_Furniture_TV",
+			"HandCart_Furniture_PC"
 		};
 		hiddenSelectionsMaterials[] = {"HandCart\data\handcart_frame.rvmat"};
 
@@ -135,7 +148,20 @@ class CfgVehicles
 			"HandCart_CanopyTent3",
 			"HandCart_Barrel",
 			"HandCart_Stove",
-			"HandCart_SewingMachine"
+			"HandCart_SewingMachine",
+			"HandCart_Furniture_Sofa",
+			"HandCart_Furniture_Table",
+			"HandCart_Furniture_OfficeDesk",
+			"HandCart_Furniture_MedicalTable",
+			"HandCart_Furniture_Shelf",
+			"HandCart_Furniture_WorkbenchOld",
+			"HandCart_Furniture_Wardrobe",
+			"HandCart_Furniture_Cupboard",
+			"HandCart_Furniture_StretcherGreen",
+			"HandCart_Furniture_StretcherRed",
+			"HandCart_Furniture_Fridge",
+			"HandCart_Furniture_TV",
+			"HandCart_Furniture_PC"
 		};
 	};
 
@@ -153,6 +179,112 @@ class CfgVehicles
 	{
 		scope = 2;
 		hiddenSelectionsTextures[] = {"HandCart\data\handcart_frame_yellow_co.paa"};
+	};
+
+	// Furniture: the game's own furniture models as items, so a piece taken from the map
+	// (HandTruckFurniture.c) can be wheeled about and set down anywhere. Heavy, never in
+	// hands; rides on the hand truck one at a time, each piece in a slot of its own placed
+	// to fit it (HandCart_Furniture_<piece>).
+	class HandCart_Furniture_Base: Inventory_Base
+	{
+		scope = 0;
+		descriptionShort = "Furniture. Move it with a hand truck.";
+		weight = 30000;
+		itemSize[] = {10, 10};
+		itemBehaviour = 0;
+		physLayer = "item_large";
+		carveNavmesh = 1;
+	};
+	class HandCart_Furniture_Sofa: HandCart_Furniture_Base
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_Sofa"};
+		displayName = "Old sofa";
+		model = "\DZ\structures\furniture\chairs\sofa_leather\brown_sofa_old.p3d";
+	};
+	class HandCart_Furniture_Table: HandCart_Furniture_Base
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_Table"};
+		displayName = "Table";
+		model = "\DZ\structures\furniture\various\table_dz.p3d";
+	};
+	class HandCart_Furniture_OfficeDesk: HandCart_Furniture_Base
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_OfficeDesk"};
+		displayName = "Office desk";
+		model = "\DZ\structures\furniture\tables\office_desk\desk_office.p3d";
+	};
+	class HandCart_Furniture_MedicalTable: HandCart_Furniture_Base
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_MedicalTable"};
+		displayName = "Medical table";
+		model = "\DZ\structures\furniture\medical\medical_table\medical_table.p3d";
+	};
+	class HandCart_Furniture_Shelf: HandCart_Furniture_Base
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_Shelf"};
+		displayName = "Shelf";
+		model = "\DZ\structures\furniture\various\shelf_dz.p3d";
+	};
+	class HandCart_Furniture_WorkbenchOld: HandCart_Furniture_Base
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_WorkbenchOld"};
+		displayName = "Old workbench";
+		model = "\DZ\structures\furniture\various\workbench_dz.p3d";
+	};
+	class HandCart_Furniture_Wardrobe: HandCart_Furniture_Base
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_Wardrobe"};
+		displayName = "Wardrobe";
+		model = "\DZ\structures\furniture\cases\almara\almara_open.p3d";
+	};
+	class HandCart_Furniture_Cupboard: HandCart_Furniture_Base
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_Cupboard"};
+		displayName = "Cupboard";
+		model = "\DZ\structures\furniture\cases\dhangar_borwnskrin\dhangar_brownskrin_open.p3d";
+	};
+	class HandCart_Furniture_StretcherGreen: HandCart_Furniture_Base
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_StretcherGreen"};
+		displayName = "Stretcher";
+		model = "\DZ\structures\furniture\beds\stretcher_green.p3d";
+	};
+	class HandCart_Furniture_StretcherRed: HandCart_Furniture_Base
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_StretcherRed"};
+		displayName = "Stretcher";
+		model = "\DZ\structures\furniture\beds\stretcher_red.p3d";
+	};
+	class HandCart_Furniture_Fridge: HandCart_Furniture_Base
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_Fridge"};
+		displayName = "Fridge";
+		model = "\DZ\structures\furniture\kitchen\fridge\fridge.p3d";
+	};
+	class HandCart_Furniture_TV: HandCart_Furniture_Base
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_TV"};
+		displayName = "Television";
+		model = "\DZ\structures\furniture\eletrical_appliances\tv_a\tv_a.p3d";
+	};
+	class HandCart_Furniture_PC: HandCart_Furniture_Base
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_PC"};
+		displayName = "Computer";
+		model = "\DZ\structures\furniture\eletrical_appliances\pc\pc.p3d";
 	};
 
 	// Loadable items: their own slots plus the hand truck's. Vanilla slots are repeated
@@ -308,6 +440,84 @@ class CfgSlots
 		displayName = "Barrel";
 		ghostIcon = "";
 	};
+	class Slot_HandCart_Furniture_Sofa
+	{
+		name = "HandCart_Furniture_Sofa";
+		displayName = "Furniture";
+		ghostIcon = "";
+	};
+	class Slot_HandCart_Furniture_Table
+	{
+		name = "HandCart_Furniture_Table";
+		displayName = "Furniture";
+		ghostIcon = "";
+	};
+	class Slot_HandCart_Furniture_OfficeDesk
+	{
+		name = "HandCart_Furniture_OfficeDesk";
+		displayName = "Furniture";
+		ghostIcon = "";
+	};
+	class Slot_HandCart_Furniture_MedicalTable
+	{
+		name = "HandCart_Furniture_MedicalTable";
+		displayName = "Furniture";
+		ghostIcon = "";
+	};
+	class Slot_HandCart_Furniture_Shelf
+	{
+		name = "HandCart_Furniture_Shelf";
+		displayName = "Furniture";
+		ghostIcon = "";
+	};
+	class Slot_HandCart_Furniture_WorkbenchOld
+	{
+		name = "HandCart_Furniture_WorkbenchOld";
+		displayName = "Furniture";
+		ghostIcon = "";
+	};
+	class Slot_HandCart_Furniture_Wardrobe
+	{
+		name = "HandCart_Furniture_Wardrobe";
+		displayName = "Furniture";
+		ghostIcon = "";
+	};
+	class Slot_HandCart_Furniture_Cupboard
+	{
+		name = "HandCart_Furniture_Cupboard";
+		displayName = "Furniture";
+		ghostIcon = "";
+	};
+	class Slot_HandCart_Furniture_StretcherGreen
+	{
+		name = "HandCart_Furniture_StretcherGreen";
+		displayName = "Furniture";
+		ghostIcon = "";
+	};
+	class Slot_HandCart_Furniture_StretcherRed
+	{
+		name = "HandCart_Furniture_StretcherRed";
+		displayName = "Furniture";
+		ghostIcon = "";
+	};
+	class Slot_HandCart_Furniture_Fridge
+	{
+		name = "HandCart_Furniture_Fridge";
+		displayName = "Furniture";
+		ghostIcon = "";
+	};
+	class Slot_HandCart_Furniture_TV
+	{
+		name = "HandCart_Furniture_TV";
+		displayName = "Furniture";
+		ghostIcon = "";
+	};
+	class Slot_HandCart_Furniture_PC
+	{
+		name = "HandCart_Furniture_PC";
+		displayName = "Furniture";
+		ghostIcon = "";
+	};
 	// Life Machines' stove and sewing machine (the HandCart_LifeMachines add-on)
 	class Slot_HandCart_Stove
 	{
@@ -435,6 +645,84 @@ class CfgNonAIVehicles
 		scope = 2;
 		inventorySlot[] = {"HandCart_Barrel"};
 		model = "\HandCart\proxies\handcart_barrel.p3d";
+	};
+	class Proxyhandcart_furniture_sofa: ProxyAttachment
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_Sofa"};
+		model = "\HandCart\proxies\handcart_furniture_sofa.p3d";
+	};
+	class Proxyhandcart_furniture_table: ProxyAttachment
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_Table"};
+		model = "\HandCart\proxies\handcart_furniture_table.p3d";
+	};
+	class Proxyhandcart_furniture_officedesk: ProxyAttachment
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_OfficeDesk"};
+		model = "\HandCart\proxies\handcart_furniture_officedesk.p3d";
+	};
+	class Proxyhandcart_furniture_medicaltable: ProxyAttachment
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_MedicalTable"};
+		model = "\HandCart\proxies\handcart_furniture_medicaltable.p3d";
+	};
+	class Proxyhandcart_furniture_shelf: ProxyAttachment
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_Shelf"};
+		model = "\HandCart\proxies\handcart_furniture_shelf.p3d";
+	};
+	class Proxyhandcart_furniture_workbenchold: ProxyAttachment
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_WorkbenchOld"};
+		model = "\HandCart\proxies\handcart_furniture_workbenchold.p3d";
+	};
+	class Proxyhandcart_furniture_wardrobe: ProxyAttachment
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_Wardrobe"};
+		model = "\HandCart\proxies\handcart_furniture_wardrobe.p3d";
+	};
+	class Proxyhandcart_furniture_cupboard: ProxyAttachment
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_Cupboard"};
+		model = "\HandCart\proxies\handcart_furniture_cupboard.p3d";
+	};
+	class Proxyhandcart_furniture_stretchergreen: ProxyAttachment
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_StretcherGreen"};
+		model = "\HandCart\proxies\handcart_furniture_stretchergreen.p3d";
+	};
+	class Proxyhandcart_furniture_stretcherred: ProxyAttachment
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_StretcherRed"};
+		model = "\HandCart\proxies\handcart_furniture_stretcherred.p3d";
+	};
+	class Proxyhandcart_furniture_fridge: ProxyAttachment
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_Fridge"};
+		model = "\HandCart\proxies\handcart_furniture_fridge.p3d";
+	};
+	class Proxyhandcart_furniture_tv: ProxyAttachment
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_TV"};
+		model = "\HandCart\proxies\handcart_furniture_tv.p3d";
+	};
+	class Proxyhandcart_furniture_pc: ProxyAttachment
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Furniture_PC"};
+		model = "\HandCart\proxies\handcart_furniture_pc.p3d";
 	};
 	class Proxyhandcart_stove: ProxyAttachment
 	{
