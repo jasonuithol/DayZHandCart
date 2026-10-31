@@ -33,6 +33,11 @@ timeout 300 "$GE/files/bin/wine64" "$BINARIZE" -targetBonesInterval=56 -maxProce
 }
 
 STAGE="$ROOT/build/HandCart"
+# DayZMissions' workshop_publish.sh records a new Workshop item's id in the staged folder
+# (mods/HandCart links here): keep it in the source so the next build still has it
+if [ -f "$STAGE/workshop.id" ] && [ ! -f "$ROOT/HandCart/workshop.id" ]; then
+	cp "$STAGE/workshop.id" "$ROOT/HandCart/workshop.id"
+fi
 rm -rf "$STAGE"
 cp -r "$ROOT/HandCart" "$STAGE"
 rm -f "$STAGE/model.cfg"   # baked into the binarized models
