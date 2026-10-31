@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<modded_inputs>
+	<inputs>
+		<actions>
+			<input name="UAHandCartRotateLeft" loc="Hand truck: rotate placement left" />
+			<input name="UAHandCartRotateRight" loc="Hand truck: rotate placement right" />
+		</actions>
+		<sorting name="handcart" loc="Hand Truck">
+			<input name="UAHandCartRotateLeft" />
+			<input name="UAHandCartRotateRight" />
+		</sorting>
+	</inputs>
+	<preset>
+		<input name="UAHandCartRotateLeft">
+			<btn name="kZ" />
+		</input>
+		<input name="UAHandCartRotateRight">
+			<btn name="kX" />
+		</input>
+	</preset>
+</modded_inputs>
