@@ -1,0 +1,29 @@
+A hand truck (sack truck) for DayZ. Wheel heavy things around instead of carrying them one at a time.
+
+[h2]What it carries[/h2]
+One kind of load at a time, stacked, contents and all (a full barrel or sea chest stays full):
+[list]
+[*] Sea chests: 2
+[*] Wooden crates: 4
+[*] MS3 dual wheel: 1, MS3 or M1025 wheels: 2, car wheels: 3
+[*] Power generator: 1
+[*] Canopy tents, packed: 3
+[*] Barrels and fire barrels: 1 (the lid goes on; a fire barrel must be out)
+[*] Expansion safes, locked or not (door shut): 1, with [b]Hand Truck - Expansion Safes[/b]
+[*] Life Machines' stove and sewing machine: 1, with [b]Hand Truck - Life Machines[/b]
+[/list]
+
+[h2]How it works[/h2]
+[list]
+[*] Hold it and you push it in front of you, tilted back on its wheels. Empty, you can jog; loaded, you walk, slower off-road. No sprinting, jumping, climbing or vaulting with it.
+[*] Load: look at something and press F, or drag it onto the truck in your inventory.
+[*] Unload: click for a ghost of the top item, aim it (mouse wheel or Z/X to turn), hold to set it down within 2 m. Or drag it off in the inventory.
+[*] Vehicles: F at a vehicle offers to load from it (its slots, like an MS3's barrel and crate slots, then its cargo) or put the top item in. Dragging works too.
+[*] The truck itself fits in any vehicle's cargo.
+[*] Blue, red and yellow, with damaged and ruined looks.
+[/list]
+
+[h2]Servers[/h2]
+Needed on the server and the clients. Settings in [i]$profile:HandCart/HandCartSettings.json[/i] (unload distance, slope, speeds, blocked items...). Add the hand trucks to your loot table to have them spawn: entries in the GitHub repository's server_files/types_handcart.xml.
+
+Source and details: https://github.com/jasonuithol/DayZHandCart

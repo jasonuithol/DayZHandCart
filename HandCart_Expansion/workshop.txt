@@ -1,0 +1,5 @@
+Add-on for [b]Hand Truck[/b]: lets the hand truck carry DayZ Expansion's safes (Large, Medium and Mini), locked or not, as long as the door is shut. Contents ride along.
+
+Requires: Hand Truck and DayZ-Expansion-BaseBuilding. Load it after both. Server and client.
+
+Source: https://github.com/jasonuithol/DayZHandCart

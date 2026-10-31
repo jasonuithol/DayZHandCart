@@ -1,0 +1,5 @@
+Add-on for [b]Hand Truck[/b]: lets the hand truck carry the stove and sewing machine from Life Machines (huntermods.online), which otherwise can't be moved once deployed. Contents ride along; not while they're working. They can also go into a vehicle's cargo. Nothing of Life Machines is repacked.
+
+Requires: Hand Truck and Life Machines. Load it after both. Server and client.
+
+Source: https://github.com/jasonuithol/DayZHandCart
