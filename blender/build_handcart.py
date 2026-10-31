@@ -320,6 +320,8 @@ TRUCK_WHEEL_R = 0.46      # MS3 and M1025 wheels
 CAR_WHEEL_R = 0.39        # biggest car wheel (Gunter)
 CAR_WHEEL_W = 0.22
 BARREL_R = 0.29           # barrels and fire barrels, origin at the bottom
+STOVE_HALF_DEPTH = 0.39   # Life Machines stove: 0.77 square, 1.09 tall, origin at the bottom
+SEWING_HALF_DEPTH = 0.29  # Life Machines sewing machine: 1.15 wide, 1.27 tall, origin at the bottom
 GENERATOR_HALF_DEPTH = 0.205  # power generator: 0.70 wide, 0.70 tall, origin at the bottom
 TENT_R = 0.16             # packed canopy tent: not measurable on a server (its packed
                           # state has no collision box), a guessed bundle radius
@@ -341,6 +343,10 @@ LOAD_PROXIES = {
                           for i in range(3)],
     # Barrel standing on the nose plate
     "handcart_barrel": [((0, LOAD_BACK + BARREL_R, DECK), (0, 0, 0))],
+    # Life Machines' stove and sewing machine standing on the nose plate, the sewing
+    # table's long side across the truck
+    "handcart_stove": [((0, LOAD_BACK + STOVE_HALF_DEPTH, DECK), (0, 0, 0))],
+    "handcart_sewingmachine": [((0, LOAD_BACK + SEWING_HALF_DEPTH, DECK), (0, 0, 0))],
     # Generator standing on the nose plate, its long side across the truck
     "handcart_generator": [((0, LOAD_BACK + GENERATOR_HALF_DEPTH, DECK + 0.014), (0, 0, 0))],
     # Packed canopy tents lying across the truck, stacked three high

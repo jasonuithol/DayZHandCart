@@ -173,23 +173,28 @@ class CustomMission: MissionServer
 		Fill(Drop("Barrel_Green", m_Dock + side * 3 - m_DockDir * 5));
 		Fill(Drop("SeaChest", m_Dock + side * 3 - m_DockDir * 7));
 		Drop("Barrel_Red", m_Dock - side * 3 - m_DockDir * 5);   // empty
+
+		// Life Machines' stove (with things in it) and sewing machine
+		Fill(Drop("HM_Stove", m_Dock - side * 3 - m_DockDir * 8));
+		Drop("HM_Sewing_Machine", m_Dock - side * 3 - m_DockDir * 10);
 	}
 
-	//! Put a few things in a container (a closed barrel is opened for it and closed again)
+	//! Put a few things in a container (one that only takes things while open, like a
+	//! closed barrel or stove, is opened for it and closed again)
 	void Fill(EntityAI container)
 	{
 		if (!container)
 			return;
-		Barrel_ColorBase barrel = Barrel_ColorBase.Cast(container);
-		if (barrel && barrel.IsOpen())
-			barrel = null;
-		if (barrel)
-			barrel.Open();
+		ItemBase openable = ItemBase.Cast(container);
+		if (openable && openable.IsOpen())
+			openable = null;
+		if (openable)
+			openable.Open();
 		container.GetInventory().CreateInInventory("Rice");
 		container.GetInventory().CreateInInventory("Canteen");
 		container.GetInventory().CreateInInventory("BakedBeansCan");
-		if (barrel)
-			barrel.Close();
+		if (openable)
+			openable.Close();
 	}
 
 	void Setup()
@@ -340,7 +345,7 @@ class CustomMission: MissionServer
 	void LogBoxes()
 	{
 		TStringArray types = {"ExpansionSafeLarge", "ExpansionSafeMedium", "ExpansionSafeMini", "SeaChest", "WoodenCrate",
-			"Truck_01_WheelDouble", "Truck_01_Wheel", "Offroad_02_Wheel", "HatchbackWheel", "CivSedanWheel", "Sedan_02_Wheel", "Hatchback_02_Wheel", "PowerGenerator", "PartyTent", "Barrel_Blue", "BarrelHoles_Blue"};
+			"Truck_01_WheelDouble", "Truck_01_Wheel", "Offroad_02_Wheel", "HatchbackWheel", "CivSedanWheel", "Sedan_02_Wheel", "Hatchback_02_Wheel", "PowerGenerator", "PartyTent", "Barrel_Blue", "BarrelHoles_Blue", "HM_Stove", "HM_Sewing_Machine"};
 		for (int i = 0; i < types.Count(); i++)
 		{
 			EntityAI e = Drop(types[i], Verge(20, i * 3));
@@ -441,6 +446,8 @@ class CustomMission: MissionServer
 		Check(!barrel.IsOpen(), "its lid is shut on the truck");
 		HandTruckRules.UnloadServer(m_Truck, barrel, Verge(4, -34), "0 0 0");
 
+		TestLifeMachines();
+
 		Check(m_MS3 != null, "MS3 on the docks");
 		if (!m_MS3)
 			return;
@@ -486,6 +493,35 @@ class CustomMission: MissionServer
 
 		CarWheel wheel = CarWheel.Cast(m_MS3.GetInventory().FindAttachment(InventorySlots.GetSlotIdFromString("Truck_01_Wheel_1_1")));
 		Check(wheel && !HandTruckRules.CanLoad(m_Truck, wheel), "the MS3's own wheels are not a load");
+	}
+
+	//! Life Machines' stove and sewing machine (the HandCart_LifeMachines add-on)
+	void TestLifeMachines()
+	{
+		HM_Stove stove = HM_Stove.Cast(Drop("HM_Stove", Verge(-m_Width / 2 - 1 + 1.5, -36)));
+		Check(stove != null, "Life Machines stove created");
+		if (!stove)
+			return;
+		Fill(stove);
+		Check(stove.GetInventory().GetCargo().GetItemCount() == 3, "stove has things in it");
+		Check(stove.CanPutIntoHands(m_Dummy) && !m_Dummy.CanReceiveItemIntoHands(stove), "stove passes the drag check, but still can't go into hands");
+		Check(Load(stove), "stove loaded");
+		Check(stove.GetInventory().GetCargo().GetItemCount() == 3, "stove kept its contents");
+		Check(HandTruckRules.UnloadServer(m_Truck, stove, Verge(4, -36), "0 0 0") && !stove.GetHierarchyParent(), "stove set down");
+
+		HM_Sewing_Machine sewing = HM_Sewing_Machine.Cast(Drop("HM_Sewing_Machine", Verge(-m_Width / 2 - 1 + 1.5, -38)));
+		Check(sewing != null, "Life Machines sewing machine created");
+		if (!sewing)
+			return;
+		sewing.SetMachineWorking(true);
+		Check(!HandTruckRules.CanLoad(m_Truck, sewing), "working sewing machine refused");
+		sewing.SetMachineWorking(false);
+		Check(Load(sewing), "sewing machine loaded once it's done");
+		Check(!HandTruckRules.CanLoad(m_Truck, stove), "stove refused while carrying the sewing machine");
+		Check(!sewing.CanPutInCargo(m_Truck) && sewing.CanPutInCargo(m_MS3), "sewing machine fits a vehicle's cargo, no other");
+		Check(HandTruckRules.UnloadIntoVehicleServer(m_Truck, Transport.Cast(m_MS3)) && sewing.GetHierarchyParent() == m_MS3, "sewing machine put in the MS3");
+		Check(Load(sewing) && sewing.GetHierarchyParent() == m_Truck, "and taken back out");
+		Check(HandTruckRules.UnloadServer(m_Truck, sewing, Verge(4, -38), "0 0 0") && !sewing.GetHierarchyParent(), "sewing machine set down");
 	}
 
 	void TestDropped()

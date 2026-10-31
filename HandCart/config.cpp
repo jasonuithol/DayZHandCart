@@ -76,7 +76,9 @@ class CfgVehicles
 			"HandCart_CanopyTent1",
 			"HandCart_CanopyTent2",
 			"HandCart_CanopyTent3",
-			"HandCart_Barrel"
+			"HandCart_Barrel",
+			"HandCart_Stove",
+			"HandCart_SewingMachine"
 		};
 		hiddenSelectionsMaterials[] = {"HandCart\data\handcart_frame.rvmat"};
 
@@ -131,7 +133,9 @@ class CfgVehicles
 			"HandCart_CanopyTent1",
 			"HandCart_CanopyTent2",
 			"HandCart_CanopyTent3",
-			"HandCart_Barrel"
+			"HandCart_Barrel",
+			"HandCart_Stove",
+			"HandCart_SewingMachine"
 		};
 	};
 
@@ -304,6 +308,19 @@ class CfgSlots
 		displayName = "Barrel";
 		ghostIcon = "";
 	};
+	// Life Machines' stove and sewing machine (the HandCart_LifeMachines add-on)
+	class Slot_HandCart_Stove
+	{
+		name = "HandCart_Stove";
+		displayName = "Stove";
+		ghostIcon = "";
+	};
+	class Slot_HandCart_SewingMachine
+	{
+		name = "HandCart_SewingMachine";
+		displayName = "Sewing machine";
+		ghostIcon = "";
+	};
 	class Slot_HandCart_Generator
 	{
 		name = "HandCart_Generator";
@@ -418,6 +435,18 @@ class CfgNonAIVehicles
 		scope = 2;
 		inventorySlot[] = {"HandCart_Barrel"};
 		model = "\HandCart\proxies\handcart_barrel.p3d";
+	};
+	class Proxyhandcart_stove: ProxyAttachment
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_Stove"};
+		model = "\HandCart\proxies\handcart_stove.p3d";
+	};
+	class Proxyhandcart_sewingmachine: ProxyAttachment
+	{
+		scope = 2;
+		inventorySlot[] = {"HandCart_SewingMachine"};
+		model = "\HandCart\proxies\handcart_sewingmachine.p3d";
 	};
 	class Proxyhandcart_generator: ProxyAttachment
 	{

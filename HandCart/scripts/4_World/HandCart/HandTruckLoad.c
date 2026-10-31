@@ -45,6 +45,8 @@ class HandTruckLoad
 			s_Kinds.Insert(new HandTruckLoadKind("Generator", "HandCart_Generator", 1));
 			s_Kinds.Insert(new HandTruckLoadKind("CanopyTent", "HandCart_CanopyTent", 3));
 			s_Kinds.Insert(new HandTruckLoadKind("Barrel", "HandCart_Barrel", 1));
+			s_Kinds.Insert(new HandTruckLoadKind("Stove", "HandCart_Stove", 1));
+			s_Kinds.Insert(new HandTruckLoadKind("SewingMachine", "HandCart_SewingMachine", 1));
 		}
 		return s_Kinds;
 	}

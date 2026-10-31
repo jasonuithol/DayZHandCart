@@ -17,7 +17,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROXY_DIR = os.path.join(ROOT, "HandCart", "proxies")
 A3OB_MODULE = "bl_ext.user_default.Arma3ObjectBuilder"
 # One per load slot (see LOAD_PROXIES in build_handcart.py)
-PROXY_MODELS = (["handcart_safe", "handcart_dualwheel", "handcart_generator", "handcart_barrel"]
+PROXY_MODELS = (["handcart_safe", "handcart_dualwheel", "handcart_generator", "handcart_barrel",
+                 "handcart_stove", "handcart_sewingmachine"]
                 + [f"handcart_canopytent{i}" for i in range(1, 4)]
                 + [f"handcart_seachest{i}" for i in range(1, 3)]
                 + [f"handcart_crate{i}" for i in range(1, 5)]

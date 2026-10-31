@@ -26,6 +26,8 @@ them one at a time: safes, sea chests, crates, barrels, wheels, a generator, ten
   | Power generator | 1 |
   | Canopy tent, packed | 3 |
   | Barrel or fire barrel (lid goes on; a fire barrel must be out) | 1 |
+  | Life Machines stove (not while cooking) | 1 |
+  | Life Machines sewing machine (not while sewing) | 1 |
 
   Containers keep their contents; a full barrel or sea chest stays full.
 - **Unloading.** Click to bring up a ghost of the top item, aim it (mouse wheel
@@ -41,11 +43,15 @@ them one at a time: safes, sea chests, crates, barrels, wheels, a generator, ten
 
 ## Installing
 
-Two mods, both needed on the server and the clients:
+Up to three mods, each needed on the server and the clients:
 
 - **@HandCart**: the hand truck. Needs nothing but DayZ (1.30).
 - **@HandCart_Expansion**: lets it carry Expansion's safes. Needs
   DayZ-Expansion-BaseBuilding. Leave it out if you don't run Expansion.
+- **@HandCart_LifeMachines**: lets it carry the stove and sewing machine from
+  [Life Machines](https://steamcommunity.com/sharedfiles/filedetails/?id=3741693087),
+  which otherwise can't be moved once deployed. They can also go into a vehicle's
+  cargo (no other). Needs Life Machines. Leave it out if you don't run it.
 
 To have hand trucks spawn as loot, add the entries in
 [`server_files/types_handcart.xml`](server_files/types_handcart.xml) to your
