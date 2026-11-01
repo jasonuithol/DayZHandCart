@@ -25,19 +25,25 @@ One kind of load at a time, stacked, contents and all (a full barrel or sea ches
 
 [h2]For server owners[/h2]
 [b]Install[/b]
-[list]
-[*] Load @HandCart on the server and the clients, after your other mods. Add the optional add-ons after it if you run Expansion or Life Machines.
-[*] Copy the key from @HandCart/keys/ into your server's keys/ folder (the same for each add-on).
-[/list]
-
-[b]Loot[/b]
-Hand trucks don't spawn until you add them to your mission's loot table. The entries come with the mod, in [i]@HandCart/extras/types_handcart.xml[/i]: three colours, about 9 trucks in all, spawning where power generators do (tools, Industrial) but only at floor level, never on shelves. Either paste the three type entries into your mission's db/types.xml, or copy the file into a folder of your mission (for example mpmissions/yourmission/handcart/) and register it in the mission's cfgeconomycore.xml, inside <economycore>:
+Paths are relative to the server's install folder (the one with DayZServer_x64.exe or DayZServer), shown here as DayZServer/.
+[olist]
+[*] Put the mod's folder in the server's install folder as DayZServer/@HandCart (with its subfolders addons/, keys/ and extras/).
+[*] Add it to the server's launch parameter, after your other mods: -mod=...;@HandCart
+With the add-ons, they go straight after it: -mod=...;@HandCart;@HandCart_Expansion;@HandCart_LifeMachines
+[*] Copy the key file DayZServer/@HandCart/keys/tarbaby.bikey into DayZServer/keys/ (next to dayz.bikey). Without it, players using the mod are kicked for unsigned files. The two add-ons are signed with the same key, tarbaby.bikey, so this one file covers them too.
+[*] Copy the loot entries DayZServer/@HandCart/extras/types_handcart.xml into a folder of your mission, for example DayZServer/mpmissions/dayzOffline.chernarusplus/handcart/types_handcart.xml (or into a folder you already use for modded types).
+[*] Register that file in your mission's DayZServer/mpmissions/dayzOffline.chernarusplus/cfgeconomycore.xml, inside <economycore>, using the folder name from step 4:
 [code]
 <ce folder='handcart'>
     <file name='types_handcart.xml' type='types' />
 </ce>
 [/code]
-Then restart the server.
+If you used a folder that already has a <ce> block, add just the <file ... /> line to it.
+[*] Restart the server.
+[/olist]
+Players only need to subscribe; the DayZ launcher loads the mod for them.
+
+The loot entries add three colours, about 9 hand trucks in all, spawning where power generators do (tools, Industrial) but only at floor level, never on shelves. Instead of steps 4 and 5 you can paste the three <type> entries from types_handcart.xml into your mission's db/types.xml.
 
 [b]Settings[/b]
 The server writes [i]$profile:HandCart/HandCartSettings.json[/i] with defaults on its first start and sends it to every client. Edit it and restart.

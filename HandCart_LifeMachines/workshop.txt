@@ -1,3 +1,12 @@
 Add-on for [b]Hand Truck[/b]: lets the hand truck carry the stove and sewing machine from Life Machines (huntermods.online), which otherwise can't be moved once deployed. Contents ride along; not while they're working. They can also go into a vehicle's cargo. Nothing of Life Machines is repacked.
 
-Requires: Hand Truck and Life Machines. Load it after both. Server and client: copy the key from its keys/ folder into your server keys/ folder.
+Requires: Hand Truck and Life Machines. Server and client.
+
+[b]Install[/b] (paths relative to the server's install folder, shown as DayZServer/)
+[olist]
+[*] Put the mod's folder in the server's install folder as DayZServer/@HandCart_LifeMachines.
+[*] Add it to the server's launch parameter, after Hand Truck and Life Machines: -mod=...;@HandCart;@HandCart_LifeMachines
+[*] Key: the add-on is signed with the same key as Hand Truck, DayZServer/@HandCart_LifeMachines/keys/tarbaby.bikey. If DayZServer/keys/tarbaby.bikey is already there (from installing Hand Truck), there's nothing to copy; otherwise copy it into DayZServer/keys/.
+[*] Restart the server.
+[/olist]
+Players only need to subscribe; the DayZ launcher loads the mod for them.

@@ -1,3 +1,12 @@
 Add-on for [b]Hand Truck[/b]: lets the hand truck carry DayZ Expansion's safes (Large, Medium and Mini), locked or not, as long as the door is shut. Contents ride along.
 
-Requires: Hand Truck and DayZ-Expansion-BaseBuilding. Load it after both. Server and client: copy the key from its keys/ folder into your server keys/ folder.
+Requires: Hand Truck and DayZ-Expansion-BaseBuilding. Server and client.
+
+[b]Install[/b] (paths relative to the server's install folder, shown as DayZServer/)
+[olist]
+[*] Put the mod's folder in the server's install folder as DayZServer/@HandCart_Expansion.
+[*] Add it to the server's launch parameter, after Hand Truck and the Expansion mods: -mod=...;@HandCart;@HandCart_Expansion
+[*] Key: the add-on is signed with the same key as Hand Truck, DayZServer/@HandCart_Expansion/keys/tarbaby.bikey. If DayZServer/keys/tarbaby.bikey is already there (from installing Hand Truck), there's nothing to copy; otherwise copy it into DayZServer/keys/.
+[*] Restart the server.
+[/olist]
+Players only need to subscribe; the DayZ launcher loads the mod for them.
