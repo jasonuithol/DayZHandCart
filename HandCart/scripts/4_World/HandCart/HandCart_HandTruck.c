@@ -2,24 +2,20 @@
 //! config-only subclasses and pick up this script class automatically.
 //! The load is carried as attachments (slots and proxies in config.cpp), so it is drawn
 //! on the truck, saved with it, and keeps its own contents.
-//! A tied-up player can ride it instead (HandTruckRider.c): the truck holds their network
-//! id, and the turn its pusher's client sends, so everyone puts them in the same place.
+//! A tied-up player can ride it instead (HandTruckRider.c): the truck holds their network id.
 class HandCart_HandTruck_Base : Inventory_Base
 {
-	static const int RPC_TURN = 48201732;
 	static const float WATCH_INTERVAL = 500;   //!< ms between the server's checks on a rider
 
 	protected ref HandTruckVisual m_Visual;   //!< client: the copy drawn while the truck is held
 	protected int m_RiderLow;                 //!< network id of the person riding it, 0 0 if none
 	protected int m_RiderHigh;
-	protected float m_Turn;                   //!< degrees the truck points right of its pusher's facing
 	protected bool m_HadRider;
 
 	void HandCart_HandTruck_Base()
 	{
 		RegisterNetSyncVariableInt("m_RiderLow");
 		RegisterNetSyncVariableInt("m_RiderHigh");
-		RegisterNetSyncVariableFloat("m_Turn", -90, 90, 1);
 	}
 
 	//! Carrying anything: a load, or a person
@@ -49,11 +45,6 @@ class HandCart_HandTruck_Base : Inventory_Base
 		return PlayerBase.Cast(loc.GetParent());
 	}
 
-	float GetTurn()
-	{
-		return m_Turn;
-	}
-
 	//! Server: set who rides it (null: nobody)
 	void SetRiderServer(PlayerBase rider)
 	{
@@ -64,7 +55,6 @@ class HandCart_HandTruck_Base : Inventory_Base
 			m_RiderLow = 0;
 			m_RiderHigh = 0;
 		}
-		m_Turn = 0;
 		SetSynchDirty();
 
 		g_Game.GetCallQueue(CALL_CATEGORY_GAMEPLAY).Remove(WatchRider);
@@ -76,29 +66,6 @@ class HandCart_HandTruck_Base : Inventory_Base
 	protected void WatchRider()
 	{
 		HandTruckRiders.CheckServer(this);
-	}
-
-	//! Pusher's client: tell the server which way the truck points, for the rider's sake
-	void SendTurn(float turn)
-	{
-		RPCSingleParam(RPC_TURN, new Param1<float>(turn), true, null);
-	}
-
-	override void OnRPC(PlayerIdentity sender, int rpc_type, ParamsReadContext ctx)
-	{
-		super.OnRPC(sender, rpc_type, ctx);
-
-		if (rpc_type != RPC_TURN || !g_Game.IsServer())
-			return;
-		Param1<float> turn = new Param1<float>(0);
-		if (!ctx.Read(turn))
-			return;
-		PlayerBase pusher = GetPusher();
-		if (!pusher || pusher.GetIdentity() != sender || !HasRider())
-			return;
-		float limit = HandCartSettings.Get().MaxTurnDegrees;
-		m_Turn = Math.Clamp(turn.param1, -limit, limit);
-		SetSynchDirty();
 	}
 
 	override void OnVariablesSynchronized()

@@ -356,6 +356,8 @@ class CustomMission: MissionServer
 		vector axle = HandTruckPose.Apply(HandTruckPose.GetAxle(truck), tm);
 		float tilt = Math.Acos(tm[1][1]) * Math.RAD2DEG;
 		Check(vector.Distance(grip, hands) < 0.001 && Math.AbsFloat(axle[1] - axleHeight) < 0.001 && Math.AbsFloat(tilt - 50) < 0.1, "level pose: handle at the hands, wheels on the ground, leaning 50 (" + tilt + ")");
+		float pivot = HandTruckPose.GetPivot(HandCart_HandTruck_Base.Cast(truck));
+		Check(pivot > 0.7 && pivot < 1.6, "the axle is " + pivot + " m in front of the pusher");
 
 		HandTruckPose.Solve(truck, false, 0.2, tm);
 		grip = HandTruckPose.Apply(HandTruckPose.GetHandle(truck), tm);

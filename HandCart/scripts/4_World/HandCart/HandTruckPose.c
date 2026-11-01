@@ -6,8 +6,7 @@
 //! them: the hands hold the truck, its wheels are on the ground, and it leans back by its
 //! tilt. At the normal tilt (HoldTiltDegrees) they hold the handle; a truck carrying a
 //! person stands more upright (PersonTiltDegrees), and the hands slide down the rails.
-//! The truck may also point up to MaxTurnDegrees away from where its pusher faces (yaw,
-//! about the hands), and a client tips (lift) and rolls it to the ground under its wheels.
+//! A client also tips (lift) and rolls it to the ground under its wheels.
 class HandTruckPose
 {
 	//! Nose plate centre in the truck model, where a carried person stands (see
@@ -130,6 +129,15 @@ class HandTruckPose
 		tm[3] = hands + Rotate(tm[3] - hands, m);
 	}
 
+	//! How far in front of the pusher the axle is: what they step round when they turn
+	static float GetPivot(HandCart_HandTruck_Base truck)
+	{
+		vector tm[4];
+		Solve(truck, truck.HasRider(), 0, tm);
+		vector axle = Apply(GetAxle(truck), tm);
+		return axle[2];
+	}
+
 	//! Horizontal distance from the hands to the axle in a pose
 	static float Reach(EntityAI truck, vector tm[4])
 	{
@@ -147,14 +155,12 @@ class HandTruckPose
 	{
 		vector pose[4];
 		Solve(truck, true, 0, pose);
-		Turn(truck, truck.GetTurn(), 0, pose);
 		vector nose = Apply(NOSE, pose);
 
 		vector p[4];
 		pusher.GetTransform(p);
 		vector spot = p[3] + p[0] * nose[0] + p[2] * nose[2];
-		float yaw = truck.GetTurn() * Math.DEG2RAD;
-		vector dir = p[2] * Math.Cos(yaw) + p[0] * Math.Sin(yaw);
+		vector dir = p[2];
 		dir[1] = 0;
 		dir.Normalize();
 

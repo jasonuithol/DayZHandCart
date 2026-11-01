@@ -31,9 +31,11 @@ them one at a time: safes, sea chests, crates, barrels, wheels, a generator, ten
   | A person tied up with tape, rope or handcuffs | 1 |
 
   Containers keep their contents; a full barrel or sea chest stays full.
-- **Rolling.** The truck pivots on its wheels: turn and it swings the other way, then
-  comes round behind you, at most 35° off where you look. It tips and rolls so its
-  wheels stay on the ground. A loaded truck crunches over gravel; an empty one clanks.
+- **Steering.** It handles like a real hand truck: push it forward or pull it back (no
+  sidestepping), and turn slowly, with the mouse or A and D. Turning pivots it on its
+  wheels: you step sideways round the axle, walking the handles round. It tips and rolls
+  so its wheels stay on the ground. A loaded truck crunches over gravel; an empty one
+  clanks.
 - **People.** Holding an empty truck, look at a tied-up player and press **F**. They ride
   standing on the nose plate; the truck leans back less (a body can't be tilted). Click
   to set them down where they stand, if there's room and you can see the spot. They get
@@ -106,8 +108,8 @@ first start and sends it to every client.
 | `UnloadTime` | 1.5 | seconds to set an item down |
 | `SoftGroundSpeed` | 0.6 | loaded speed off-road (1 = walking) |
 | `HoldTiltDegrees`, `HoldGripForward`, `HoldLift` | 50, 0.35, 0.7 | how the held truck sits in front of the player |
-| `TurnRateDegrees` | 60 | degrees a second the truck swings back round behind its pusher |
-| `MaxTurnDegrees` | 35 | furthest the truck may point away from where its pusher looks |
+| `SteerLikeACart` | true | holding a truck: forward and back only, slow turns that pivot on its wheels |
+| `TurnRateDegrees` | 60 | fastest a player holding a truck turns (degrees a second) |
 | `FollowTerrain` | true | the held truck tips and rolls with the ground |
 | `SoundVolume` | 1 | rolling and clanking (0 = off) |
 | `AllowPeople` | true | tied-up players can be loaded |

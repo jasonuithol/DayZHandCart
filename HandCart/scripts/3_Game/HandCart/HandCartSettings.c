@@ -18,8 +18,8 @@ class HandCartSettings
 	float HoldTiltDegrees;      //!< how far the held truck leans back towards the player
 	float HoldGripForward;      //!< metres in front of the player the held truck's grip is
 	float HoldLift;             //!< metres the held truck is raised above the player's feet
-	float TurnRateDegrees;      //!< how fast the truck swings back to face where its pusher looks
-	float MaxTurnDegrees;       //!< furthest the truck may point away from where its pusher looks
+	bool SteerLikeACart;        //!< holding a truck: forward and back only, slow turns that pivot on its wheels
+	float TurnRateDegrees;      //!< fastest a player holding a truck turns (degrees a second)
 	bool FollowTerrain;         //!< the held truck tips and rolls with the ground under its wheels
 	float SoundVolume;          //!< rolling and clanking sounds: 1 = normal, 0 = off
 	bool AllowPeople;           //!< tied-up players can be loaded
@@ -42,8 +42,8 @@ class HandCartSettings
 		HoldTiltDegrees = 50.0;
 		HoldGripForward = 0.35;
 		HoldLift = 0.7;
+		SteerLikeACart = true;
 		TurnRateDegrees = 60.0;
-		MaxTurnDegrees = 35.0;
 		FollowTerrain = true;
 		SoundVolume = 1.0;
 		AllowPeople = true;
@@ -103,8 +103,8 @@ class HandCartSettings
 		ctx.Write(HoldTiltDegrees);
 		ctx.Write(HoldGripForward);
 		ctx.Write(HoldLift);
+		ctx.Write(SteerLikeACart);
 		ctx.Write(TurnRateDegrees);
-		ctx.Write(MaxTurnDegrees);
 		ctx.Write(FollowTerrain);
 		ctx.Write(SoundVolume);
 		ctx.Write(AllowPeople);
@@ -123,7 +123,7 @@ class HandCartSettings
 			return false;
 		if (!ctx.Read(HoldTiltDegrees) || !ctx.Read(HoldGripForward) || !ctx.Read(HoldLift))
 			return false;
-		if (!ctx.Read(TurnRateDegrees) || !ctx.Read(MaxTurnDegrees) || !ctx.Read(FollowTerrain))
+		if (!ctx.Read(SteerLikeACart) || !ctx.Read(TurnRateDegrees) || !ctx.Read(FollowTerrain))
 			return false;
 		if (!ctx.Read(SoundVolume) || !ctx.Read(AllowPeople) || !ctx.Read(PersonTiltDegrees))
 			return false;

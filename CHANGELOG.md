@@ -2,9 +2,9 @@
 
 ## 0.3 (unreleased)
 
-- The held truck rolls on its wheels: turning pivots it on them, and it swings back round
-  behind the player (`TurnRateDegrees`, at most `MaxTurnDegrees` off). It tips and rolls
-  with the ground (`FollowTerrain`).
+- The truck steers like one (`SteerLikeACart`): forward and back only, turning no faster
+  than `TurnRateDegrees` (mouse, or A and D), pivoting on its wheels as the player steps
+  round the axle. It tips and rolls with the ground (`FollowTerrain`).
 - Sounds: gravel crunching under a loaded truck, clanks from an empty one, a creak when
   it's dragged round (`SoundVolume`).
 - Tied-up players (tape, rope, handcuffs) can be loaded with F and set down with a click.
