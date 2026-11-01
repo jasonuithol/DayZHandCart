@@ -6,7 +6,7 @@ class HandCartSettings
 	static const string DIR = "$profile:HandCart";
 	static const string PATH = DIR + "/HandCartSettings.json";
 	static const int RPC_SYNC = 48201731;
-	static const int VERSION = 8;
+	static const int VERSION = 9;
 
 	int Version;
 	float MaxUnloadDistance;    //!< metres from the player to where an unloaded item is set down
@@ -18,6 +18,7 @@ class HandCartSettings
 	float HoldTiltDegrees;      //!< how far the held truck leans back towards the player
 	float HoldGripForward;      //!< metres in front of the player the held truck's grip is
 	float HoldLift;             //!< metres the held truck is raised above the player's feet
+	float SoundVolume;          //!< rolling and clanking sounds: 1 = normal, 0 = off
 	ref array<string> HardSurfaces;   //!< surface names always treated as road
 	ref array<string> SoftSurfaces;   //!< surface names always treated as dirt
 	ref array<string> BlockedItems;   //!< class names (subclasses too) that may never be loaded
@@ -36,6 +37,7 @@ class HandCartSettings
 		HoldTiltDegrees = 50.0;
 		HoldGripForward = 0.35;
 		HoldLift = 0.7;
+		SoundVolume = 1.0;
 		HardSurfaces = {};
 		SoftSurfaces = {};
 		BlockedItems = {};
@@ -91,6 +93,7 @@ class HandCartSettings
 		ctx.Write(HoldTiltDegrees);
 		ctx.Write(HoldGripForward);
 		ctx.Write(HoldLift);
+		ctx.Write(SoundVolume);
 		ctx.Write(HardSurfaces);
 		ctx.Write(SoftSurfaces);
 		ctx.Write(BlockedItems);
@@ -104,6 +107,8 @@ class HandCartSettings
 		if (!ctx.Read(LoadTime) || !ctx.Read(UnloadTime) || !ctx.Read(SoftGroundSpeed))
 			return false;
 		if (!ctx.Read(HoldTiltDegrees) || !ctx.Read(HoldGripForward) || !ctx.Read(HoldLift))
+			return false;
+		if (!ctx.Read(SoundVolume))
 			return false;
 		return ctx.Read(HardSurfaces) && ctx.Read(SoftSurfaces) && ctx.Read(BlockedItems);
 	}

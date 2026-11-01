@@ -16,6 +16,7 @@ One kind of load at a time, stacked, contents and all (a full barrel or sea ches
 [h2]How it works[/h2]
 [list]
 [*] Hold it and you push it in front of you, tilted back on its wheels. Empty, you can jog; loaded, you walk, slower off-road. No sprinting, jumping, climbing or vaulting with it.
+[*] Gravel crunches under a loaded truck as it rolls; an empty one clanks.
 [*] Load: look at something and press F, or drag it onto the truck in your inventory.
 [*] Unload: click for a ghost of the top item, aim it (mouse wheel or Z/X to turn), hold to set it down within 2 m. Or drag it off in the inventory.
 [*] Vehicles: F at a vehicle offers to load from it (its slots, like an MS3's barrel and crate slots, then its cargo) or put the top item in. Dragging works too.
@@ -54,6 +55,7 @@ The server writes [i]$profile:HandCart/HandCartSettings.json[/i] with defaults o
 [*] UnloadTime (1.5): seconds to set an item down
 [*] SoftGroundSpeed (0.6): loaded walking speed off-road (1 = normal walk)
 [*] HoldTiltDegrees, HoldGripForward, HoldLift (50, 0.35, 0.7): how the held truck sits in front of the player
+[*] SoundVolume (1): the truck's rolling and clanking (0 = off)
 [*] HardSurfaces, SoftSurfaces (empty): surface names to always treat as road, or as dirt
 [*] BlockedItems (empty): class names (and their subclasses) that may never be loaded
 [/list]

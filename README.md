@@ -30,6 +30,7 @@ them one at a time: safes, sea chests, crates, barrels, wheels, a generator, ten
   | Life Machines sewing machine (not while sewing) | 1 |
 
   Containers keep their contents; a full barrel or sea chest stays full.
+- **Sounds.** A loaded truck crunches over gravel as it rolls; an empty one clanks.
 - **Unloading.** Click to bring up a ghost of the top item, aim it (mouse wheel
   or Z/X to turn it), and hold to set it down. You stand still while choosing a
   spot. The spot must be within 2 m, not too steep, and in sight. Or drag the
@@ -97,6 +98,7 @@ first start and sends it to every client.
 | `UnloadTime` | 1.5 | seconds to set an item down |
 | `SoftGroundSpeed` | 0.6 | loaded speed off-road (1 = walking) |
 | `HoldTiltDegrees`, `HoldGripForward`, `HoldLift` | 50, 0.35, 0.7 | how the held truck sits in front of the player |
+| `SoundVolume` | 1 | rolling and clanking (0 = off) |
 | `HardSurfaces`, `SoftSurfaces` | empty | surface names to always treat as road or as dirt |
 | `BlockedItems` | empty | class names (and their subclasses) that may never be loaded |
 | `LoadTime` | | unused: loading is instant |
@@ -115,6 +117,7 @@ blender --background --python blender/build_handcart.py   # the truck, model.cfg
 blender --background --python blender/build_proxies.py    # the load slots' proxy models
 blender --background --python blender/bake_textures.py    # weathered textures
 tools/img2paa.sh textures/*.png HandCart/data              # textures to .paa
+tools/make_sounds.sh                                      # sounds (sources: see the script)
 tools/build.sh                                            # binarize into build/HandCart
 ```
 
@@ -130,7 +133,8 @@ The version comes from a git tag: `workshop_publish.sh` adds a `Version:` line t
 the description and starts the change note with it (`git describe --tags`, so an untagged
 upload shows up as e.g. `v0.2-3-gabc1234`).
 
-1. Commit everything, then tag the release and push the tag:
+1. Date the version's entry in `CHANGELOG.md` (it was "work in progress"), commit
+   everything, then tag the release and push the tag:
 
    ```sh
    git tag -a v0.3 -m "HandCart 0.3: what changed"
