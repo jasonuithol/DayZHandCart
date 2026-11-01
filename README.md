@@ -123,6 +123,42 @@ mod in `build/HandCart`. Packing, signing and publishing are done separately, wi
 author's DayZMissions tooling (`tools/build_mod.py`, `tools/workshop_publish.sh`, which
 read each mod's `workshop.*` files and `preview.png`), which also runs the test mission.
 
+## Releasing
+
+The Workshop keeps only the latest upload of each mod, with no version number of its own.
+The version comes from a git tag: `workshop_publish.sh` adds a `Version:` line to the end of
+the description and starts the change note with it (`git describe --tags`, so an untagged
+upload shows up as e.g. `v0.2-3-gabc1234`).
+
+1. Commit everything, then tag the release and push the tag:
+
+   ```sh
+   git tag -a v0.3 -m "HandCart 0.3: what changed"
+   git push origin main v0.3
+   ```
+
+2. Build the hand truck (the add-ons have no models and need no build step):
+   `tools/build.sh`.
+3. From DayZMissions, upload all three mods so their versions match. SteamCMD asks for the
+   Steam password and Steam Guard code, so run these yourself, not from a script:
+
+   ```sh
+   tools/workshop_publish.sh HandCart <steam login>
+   tools/workshop_publish.sh HandCart_Expansion <steam login>
+   tools/workshop_publish.sh HandCart_LifeMachines <steam login>
+   ```
+
+   SteamCMD logging in knocks the desktop Steam client offline: don't publish while
+   playing, and click Steam > Go Online afterwards.
+4. Tell server admins to update the mods and restart. Until they do, players have the new
+   upload and the server the old one, and the launcher reports a missing or mismatched
+   mod. The key stays `tarbaby.bikey`, so `keys/` needs nothing; if
+   `server_files/types_handcart.xml` changed, they need to copy it again.
+
+Players get the update automatically. To roll back, check out the old tag, build and
+upload again (`workshop_publish.sh` takes the version as an optional third argument if it
+should say something other than the tag).
+
 ## Testing
 
 [`mission/handcart.chernarusplus`](mission/handcart.chernarusplus) is a test
