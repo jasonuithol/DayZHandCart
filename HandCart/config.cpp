@@ -5,7 +5,7 @@ class CfgPatches
 		units[] = {"HandCart_HandTruck_Blue", "HandCart_HandTruck_Red", "HandCart_HandTruck_Yellow"};
 		weapons[] = {};
 		requiredVersion = 0.1;
-		requiredAddons[] = {"DZ_Data", "DZ_Scripts", "DZ_Gear_Camping", "DZ_Vehicles_Wheeled"};
+		requiredAddons[] = {"DZ_Data", "DZ_Scripts", "DZ_Gear_Camping", "DZ_Vehicles_Wheeled", "DZ_Sounds_Effects"};
 	};
 };
 
@@ -471,5 +471,49 @@ class CfgNonAIVehicles
 		scope = 2;
 		inventorySlot[] = {"HandCart_CanopyTent3"};
 		model = "\HandCart\proxies\handcart_canopytent3.p3d";
+	};
+};
+
+// Sounds of a held truck (HandTruckVisual.c): gravel crunching while it rolls loaded,
+// clanks while it rolls empty, a creak when it's swung round hard. Cut from Pixabay
+// sounds (tools/make_sounds.sh, Pixabay Content License).
+class CfgSoundShaders
+{
+	class baseCharacter_SoundShader;
+	class HandCart_Gravel_SoundShader: baseCharacter_SoundShader
+	{
+		samples[] = {{"HandCart\data\sounds\handcart_gravel", 1}};
+		volume = 0.7;
+		range = 30;
+	};
+	class HandCart_Clank_SoundShader: baseCharacter_SoundShader
+	{
+		samples[] = {{"HandCart\data\sounds\handcart_clank1", 1}, {"HandCart\data\sounds\handcart_clank2", 1}, {"HandCart\data\sounds\handcart_clank3", 1}};
+		volume = 0.5;
+		range = 40;
+	};
+	class HandCart_Creak_SoundShader: baseCharacter_SoundShader
+	{
+		samples[] = {{"HandCart\data\sounds\handcart_creak", 1}};
+		volume = 0.5;
+		range = 25;
+	};
+};
+
+class CfgSoundSets
+{
+	class baseCharacter_SoundSet;
+	class HandCart_Gravel_SoundSet: baseCharacter_SoundSet
+	{
+		soundShaders[] = {"HandCart_Gravel_SoundShader"};
+		loop = 1;
+	};
+	class HandCart_Clank_SoundSet: baseCharacter_SoundSet
+	{
+		soundShaders[] = {"HandCart_Clank_SoundShader"};
+	};
+	class HandCart_Creak_SoundSet: baseCharacter_SoundSet
+	{
+		soundShaders[] = {"HandCart_Creak_SoundShader"};
 	};
 };

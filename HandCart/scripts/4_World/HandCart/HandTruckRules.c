@@ -211,8 +211,14 @@ class HandTruckRules
 	//! Height of whatever solid is under point (from 0.3 above to 0.3 below it).
 	static bool GroundHeight(vector point, array<Object> excluded, out float height)
 	{
+		return GroundHeightBetween(point + Vector(0, 0.3, 0), point - Vector(0, 0.3, 0), excluded, height);
+	}
+
+	//! Height of the first solid thing (terrain included) on the way down from from to to
+	static bool GroundHeightBetween(vector from, vector to, array<Object> excluded, out float height)
+	{
 		array<ref RaycastRVResult> hits = new array<ref RaycastRVResult>;
-		RaycastRVParams down = new RaycastRVParams(point + Vector(0, 0.3, 0), point - Vector(0, 0.3, 0));
+		RaycastRVParams down = new RaycastRVParams(from, to);
 		down.type = ObjIntersectGeom;
 		down.sorted = true;
 		if (!DayZPhysics.RaycastRVProxy(down, hits, excluded) || hits.Count() == 0)
