@@ -181,9 +181,9 @@ should say something other than the tag).
 ## Testing
 
 [`mission/handcart.chernarusplus`](mission/handcart.chernarusplus) is a test
-mission. It lays out one of every load by a road near Balota and parks a loaded
-MS3 on the Chernogorsk docks, where players spawn with a hand truck beside two
-handcuffed survivors to load.
+mission. Players spawn with a hand truck on open, flat ground near Balota (the mission
+looks for a spot with nothing standing within 30 m), behind a loaded MS3, with one of
+every load laid out to their right and two handcuffed survivors to their left.
 
 Started with `-missiontest`, it runs headless checks (loading and unloading,
 limits, movement rules, vehicles, dragging) and shuts the server down, logging

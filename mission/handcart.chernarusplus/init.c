@@ -1,9 +1,9 @@
 // Hand truck test bed for the HandCart mod (~/Projects/DayZHandCart).
-// Players spawn on the road by Balota airfield holding a blue hand truck. Laid out on the
-// verge beside them: the red and yellow trucks and one of every load - safes (Expansion),
-// sea chests (one with things in it), wooden crates, a dual MS3 wheel, MS3 and M1025
-// wheels and car wheels - so loading, the road/dirt speed limits and unloading can all
-// be tried in one place.
+// Players spawn holding a blue hand truck on open, flat, empty ground near Balota (found
+// at start: FindOpenGround). Around them: the red and yellow trucks and one of every load -
+// safes (Expansion), sea chests (one with things in it), wooden crates, a dual MS3 wheel,
+// MS3 and M1025 wheels and car wheels - a loaded MS3 and two handcuffed survivors, so
+// loading, steering and unloading can all be tried in one place.
 // -missiontest: loads and unloads a truck headless, logs [HandCartTest] lines, then quits.
 #include "lib/RoadFinder.c"
 
@@ -58,6 +58,17 @@ class CustomMission: MissionServer
 	protected EntityAI m_Generator;
 	protected ref array<EntityAI> m_Tents;
 
+	//! Spot in the load layout, to the right of the players' spawn: `off` metres to the
+	//! right, `along` metres ahead
+	vector Lay(float off, float along)
+	{
+		vector spawn = m_Dock - m_DockDir * 7;
+		vector side = Vector(m_DockDir[2], 0, -m_DockDir[0]);
+		vector p = spawn + side * (5 + off) + m_DockDir * (along - 4);
+		p[1] = GetGame().SurfaceY(p[0], p[2]);
+		return p;
+	}
+
 	vector Verge(float off, float along)
 	{
 		vector p = m_Road + m_Across * (m_Width / 2 + off) + m_Along * along;
@@ -78,7 +89,89 @@ class CustomMission: MissionServer
 		return item;
 	}
 
-	//! A flat, clear stretch of the Chernogorsk port quay, beside the crane rails
+	//! Open ground near ANCHOR for the whole test site: within 0.6 m of level over a 56 m
+	//! square and nothing standing (trees, bushes, buildings, fences, lights) within 30 m.
+	//! The flattest, nearest such spot wins. m_Dock is where the MS3 parks, 7 m ahead of the
+	//! players' spawn; the site's middle is 2 m behind it.
+	bool FindOpenGround()
+	{
+		array<vector> spots = new array<vector>;
+		array<float> scores = new array<float>;
+		for (float x = -600; x <= 600; x += 20)
+		{
+			for (float z = -600; z <= 600; z += 20)
+			{
+				vector c = Vector(ANCHOR[0] + x, 0, ANCHOR[2] + z);
+				float range = HeightRange(c, 28, 7);
+				if (range > 0.6)
+					continue;
+				spots.Insert(c);
+				scores.Insert(range + vector.Distance(c, ANCHOR) / 1000);
+			}
+		}
+
+		for (int tries = 0; tries < 300 && spots.Count() > 0; tries++)
+		{
+			int best = 0;
+			for (int i = 1; i < scores.Count(); i++)
+			{
+				if (scores[i] < scores[best])
+					best = i;
+			}
+			vector spot = spots[best];
+			spots.Remove(best);
+			scores.Remove(best);
+			if (!IsOpen(spot, 30))
+				continue;
+
+			m_DockDir = m_Along;
+			m_Dock = spot + m_DockDir * 2;
+			m_Dock[1] = GetGame().SurfaceRoadY(m_Dock[0], m_Dock[2]);
+			Print("[HandCart] open ground " + spot + " (" + tries + " tried), the MS3 at " + m_Dock);
+			return true;
+		}
+		Print("[HandCart] no open ground near " + ANCHOR);
+		return false;
+	}
+
+	//! Highest minus lowest ground over a square of half-width `half`, sampled n x n; 99 if
+	//! any of it is water
+	float HeightRange(vector c, float half, int n)
+	{
+		float low = 100000;
+		float high = -100000;
+		float step = half * 2 / (n - 1);
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				float px = c[0] - half + i * step;
+				float pz = c[2] - half + j * step;
+				if (GetGame().SurfaceIsSea(px, pz) || GetGame().SurfaceIsPond(px, pz))
+					return 99;
+				float y = GetGame().SurfaceRoadY(px, pz);
+				low = Math.Min(low, y);
+				high = Math.Max(high, y);
+			}
+		}
+		return high - low;
+	}
+
+	//! No object with a model within radius
+	bool IsOpen(vector c, float radius)
+	{
+		array<Object> objects = new array<Object>;
+		GetGame().GetObjectsAtPosition(c, radius, objects, null);
+		for (int i = 0; i < objects.Count(); i++)
+		{
+			if (objects[i].GetShapeName() != "")
+				return false;
+		}
+		return true;
+	}
+
+	//! A flat, clear stretch of the Chernogorsk port quay, beside the crane rails (if there's
+	//! no open ground)
 	void FindDock()
 	{
 		vector a = "7474 0 2677";
@@ -135,12 +228,11 @@ class CustomMission: MissionServer
 		return true;
 	}
 
-	//! The MS3 on the docks, ready to drive, carrying full containers: barrels in two of
-	//! its barrel slots, crates in two crate slots, a sea chest in its cargo. A full barrel
-	//! and a full sea chest wait on the quay beside it.
+	//! The MS3, ready to drive, carrying full containers: barrels in two of its barrel
+	//! slots, crates in two crate slots, a sea chest in its cargo. A full barrel and a full
+	//! sea chest wait beside it.
 	void SetupDocks()
 	{
-		FindDock();
 		m_MS3 = EntityAI.Cast(GetGame().CreateObjectEx("Truck_01_Covered", m_Dock, ECE_PLACE_ON_SURFACE));
 		if (!m_MS3)
 		{
@@ -199,16 +291,19 @@ class CustomMission: MissionServer
 
 	void Setup()
 	{
-		// One row per kind of load, running along the road, 3 m off the edge
-		Drop("HandCart_HandTruck_Red", Verge(1.5, -6));
-		Drop("HandCart_HandTruck_Yellow", Verge(1.5, -4.5));
+		if (!FindOpenGround())
+			FindDock();
 
-		Drop("ExpansionSafeLarge", Verge(3, -2));
-		Drop("ExpansionSafeMedium", Verge(5, -2));
-		Drop("ExpansionSafeMini", Verge(6.5, -2));
+		// One row per kind of load, to the right of the spawn, running forward
+		Drop("HandCart_HandTruck_Red", Lay(1.5, -6));
+		Drop("HandCart_HandTruck_Yellow", Lay(1.5, -4.5));
 
-		EntityAI chest = Drop("SeaChest", Verge(3, 1));
-		Drop("SeaChest", Verge(5, 1));
+		Drop("ExpansionSafeLarge", Lay(3, -2));
+		Drop("ExpansionSafeMedium", Lay(5, -2));
+		Drop("ExpansionSafeMini", Lay(6.5, -2));
+
+		EntityAI chest = Drop("SeaChest", Lay(3, 1));
+		Drop("SeaChest", Lay(5, 1));
 		if (chest)
 		{
 			chest.GetInventory().CreateInInventory("AKM");
@@ -217,21 +312,21 @@ class CustomMission: MissionServer
 		}
 
 		for (int c = 0; c < 4; c++)
-			Drop("WoodenCrate", Verge(3 + c * 1.2, 3.5));
+			Drop("WoodenCrate", Lay(3 + c * 1.2, 3.5));
 
-		Drop("Truck_01_WheelDouble", Verge(3, 6));
-		Drop("Truck_01_Wheel", Verge(5, 6));
-		Drop("Truck_01_Wheel", Verge(6.5, 6));
-		Drop("Offroad_02_Wheel", Verge(8, 6));
+		Drop("Truck_01_WheelDouble", Lay(3, 6));
+		Drop("Truck_01_Wheel", Lay(5, 6));
+		Drop("Truck_01_Wheel", Lay(6.5, 6));
+		Drop("Offroad_02_Wheel", Lay(8, 6));
 
-		Drop("PowerGenerator", Verge(3, 11));
+		Drop("PowerGenerator", Lay(3, 11));
 		for (int t = 0; t < 4; t++)
-			Drop("PartyTent", Verge(5 + t * 1.5, 11));
+			Drop("PartyTent", Lay(5 + t * 1.5, 11));
 
-		Drop("HatchbackWheel", Verge(3, 8.5));
-		Drop("CivSedanWheel", Verge(4.2, 8.5));
-		Drop("Sedan_02_Wheel", Verge(5.4, 8.5));
-		Drop("Hatchback_02_Wheel", Verge(6.6, 8.5));
+		Drop("HatchbackWheel", Lay(3, 8.5));
+		Drop("CivSedanWheel", Lay(4.2, 8.5));
+		Drop("Sedan_02_Wheel", Lay(5.4, 8.5));
+		Drop("Hatchback_02_Wheel", Lay(6.6, 8.5));
 
 		SetupDocks();
 		SetupCaptives();
@@ -242,7 +337,7 @@ class CustomMission: MissionServer
 
 	override void StartingEquipSetup(PlayerBase player, bool clothesChosen)
 	{
-		// At the back of the MS3 on the docks, facing it
+		// At the back of the MS3, facing it
 		vector pos = m_Dock - m_DockDir * 7;
 		pos[1] = GetGame().SurfaceRoadY(pos[0], pos[2]);
 		player.SetPosition(pos);
@@ -315,17 +410,17 @@ class CustomMission: MissionServer
 
 	// --- people on hand trucks --------------------------------------------------------------
 
-	//! Two handcuffed survivors on the quay beside the players' spawn, to load onto a hand truck
+	//! Two handcuffed survivors to the left of the players' spawn, to load onto a hand truck
 	void SetupCaptives()
 	{
 		vector side = Vector(m_DockDir[2], 0, -m_DockDir[0]);
 		for (int i = 0; i < 2; i++)
 		{
-			vector pos = m_Dock - m_DockDir * 7 + side * (3 + 1.5 * i);
+			vector pos = m_Dock - m_DockDir * 7 - side * (6 + 1.5 * i);
 			pos[1] = GetGame().SurfaceRoadY(pos[0], pos[2]);
 			PlayerBase captive = Captive(pos);
 			if (captive)
-				captive.SetDirection(m_DockDir * -1);
+				captive.SetDirection(side);   // facing the spawn
 		}
 	}
 
@@ -637,7 +732,7 @@ class CustomMission: MissionServer
 
 		TestLifeMachines();
 
-		Check(m_MS3 != null, "MS3 on the docks");
+		Check(m_MS3 != null, "MS3 parked");
 		if (!m_MS3)
 			return;
 		Transport ms3 = Transport.Cast(m_MS3);
