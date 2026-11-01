@@ -57,8 +57,18 @@ Up to three mods, each needed on the server and the clients:
   cargo (no other). Needs Life Machines. Leave it out if you don't run it.
 
 To have hand trucks spawn as loot, add the entries in
-[`server_files/types_handcart.xml`](server_files/types_handcart.xml) to your
-mission's types.
+[`server_files/types_handcart.xml`](server_files/types_handcart.xml) (also in the
+Workshop mod, as `@HandCart/extras/types_handcart.xml`) to your mission's types: paste
+them into `db/types.xml`, or keep the file in a folder of the mission and register it in
+`cfgeconomycore.xml`:
+
+```xml
+<ce folder="handcart">
+    <file name="types_handcart.xml" type="types" />
+</ce>
+```
+
+They spawn where power generators do (tools, Industrial), but only at floor level.
 
 ## Settings
 

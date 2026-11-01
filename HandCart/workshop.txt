@@ -24,6 +24,6 @@ One kind of load at a time, stacked, contents and all (a full barrel or sea ches
 [/list]
 
 [h2]Servers[/h2]
-Needed on the server and the clients. Settings in [i]$profile:HandCart/HandCartSettings.json[/i] (unload distance, slope, speeds, blocked items...). Add the hand trucks to your loot table to have them spawn: entries in the GitHub repository's server_files/types_handcart.xml.
+Needed on the server and the clients. Settings in [i]$profile:HandCart/HandCartSettings.json[/i] (unload distance, slope, speeds, blocked items...). To have hand trucks spawn as loot, add the entries in the mod's [i]extras/types_handcart.xml[/i] to your mission's types (they spawn where power generators do, at floor level).
 
 Source and details: https://github.com/jasonuithol/DayZHandCart

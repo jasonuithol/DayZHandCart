@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Stage the HandCart mod for packing: copies HandCart/ to build/HandCart/ with every .p3d
-# binarized (ODOL, model.cfg baked in - the held-pose animations only exist after this).
+# binarized (ODOL, model.cfg baked in), and server_files/types_handcart.xml into its
+# extras/ for server admins.
 # DayZMissions' tools/build_mod.py packs and signs build/HandCart as @HandCart
 # (~/Projects/DayZMissions/mods/HandCart is a symlink to it).
 #
@@ -41,6 +42,9 @@ fi
 rm -rf "$STAGE"
 cp -r "$ROOT/HandCart" "$STAGE"
 rm -f "$STAGE/model.cfg"   # baked into the binarized models
+# Loot table entries for server admins, shipped beside addons/ (build_mod.py)
+mkdir -p "$STAGE/extras"
+cp "$ROOT/server_files/types_handcart.xml" "$STAGE/extras/"
 while IFS= read -r -d '' src; do
 	rel="${src#"$ROOT/HandCart/"}"
 	out="$WORK/O/HandCart/$rel"
