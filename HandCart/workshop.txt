@@ -23,7 +23,31 @@ One kind of load at a time, stacked, contents and all (a full barrel or sea ches
 [*] Blue, red and yellow, with damaged and ruined looks.
 [/list]
 
-[h2]Servers[/h2]
-Needed on the server and the clients. Settings in [i]$profile:HandCart/HandCartSettings.json[/i] (unload distance, slope, speeds, blocked items...). To have hand trucks spawn as loot, add the entries in the mod's [i]extras/types_handcart.xml[/i] to your mission's types (they spawn where power generators do, at floor level).
+[h2]For server owners[/h2]
+[b]Install[/b]
+[list]
+[*] Load @HandCart on the server and the clients, after your other mods. Add the optional add-ons after it if you run Expansion or Life Machines.
+[*] Copy the key from @HandCart/keys/ into your server's keys/ folder (the same for each add-on).
+[/list]
 
-Source and details: https://github.com/jasonuithol/DayZHandCart
+[b]Loot[/b]
+Hand trucks don't spawn until you add them to your mission's loot table. The entries come with the mod, in [i]@HandCart/extras/types_handcart.xml[/i]: three colours, about 9 trucks in all, spawning where power generators do (tools, Industrial) but only at floor level, never on shelves. Either paste the three type entries into your mission's db/types.xml, or copy the file into a folder of your mission (for example mpmissions/yourmission/handcart/) and register it in the mission's cfgeconomycore.xml, inside <economycore>:
+[code]
+<ce folder='handcart'>
+    <file name='types_handcart.xml' type='types' />
+</ce>
+[/code]
+Then restart the server.
+
+[b]Settings[/b]
+The server writes [i]$profile:HandCart/HandCartSettings.json[/i] with defaults on its first start and sends it to every client. Edit it and restart.
+[list]
+[*] MaxUnloadDistance (2): metres from the player to where an item is set down
+[*] MaxSlopeDegrees (30): steepest ground an item may be set down on
+[*] RequireLineOfSight (true): no unloading through walls
+[*] UnloadTime (1.5): seconds to set an item down
+[*] SoftGroundSpeed (0.6): loaded walking speed off-road (1 = normal walk)
+[*] HoldTiltDegrees, HoldGripForward, HoldLift (50, 0.35, 0.7): how the held truck sits in front of the player
+[*] HardSurfaces, SoftSurfaces (empty): surface names to always treat as road, or as dirt
+[*] BlockedItems (empty): class names (and their subclasses) that may never be loaded
+[/list]
