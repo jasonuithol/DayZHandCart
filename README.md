@@ -28,8 +28,17 @@ them one at a time: safes, sea chests, crates, barrels, wheels, a generator, ten
   | Barrel or fire barrel (lid goes on; a fire barrel must be out) | 1 |
   | Life Machines stove (not while cooking) | 1 |
   | Life Machines sewing machine (not while sewing) | 1 |
+  | A person tied up with tape, rope or handcuffs | 1 |
 
   Containers keep their contents; a full barrel or sea chest stays full.
+- **Rolling.** The truck pivots on its wheels: turn and it swings the other way, then
+  comes round behind you, at most 35° off where you look. It tips and rolls so its
+  wheels stay on the ground. A loaded truck crunches over gravel; an empty one clanks.
+- **People.** Holding an empty truck, look at a tied-up player and press **F**. They ride
+  standing on the nose plate; the truck leans back less (a body can't be tilted). Click
+  to set them down where they stand, if there's room and you can see the spot. They get
+  off by themselves if they're freed, killed or knocked out, or if the truck leaves your
+  hands.
 - **Unloading.** Click to bring up a ghost of the top item, aim it (mouse wheel
   or Z/X to turn it), and hold to set it down. You stand still while choosing a
   spot. The spot must be within 2 m, not too steep, and in sight. Or drag the
@@ -97,6 +106,12 @@ first start and sends it to every client.
 | `UnloadTime` | 1.5 | seconds to set an item down |
 | `SoftGroundSpeed` | 0.6 | loaded speed off-road (1 = walking) |
 | `HoldTiltDegrees`, `HoldGripForward`, `HoldLift` | 50, 0.35, 0.7 | how the held truck sits in front of the player |
+| `TurnRateDegrees` | 60 | degrees a second the truck swings back round behind its pusher |
+| `MaxTurnDegrees` | 35 | furthest the truck may point away from where its pusher looks |
+| `FollowTerrain` | true | the held truck tips and rolls with the ground |
+| `SoundVolume` | 1 | rolling and clanking (0 = off) |
+| `AllowPeople` | true | tied-up players can be loaded |
+| `PersonTiltDegrees` | 15 | how far a truck carrying a person leans back |
 | `HardSurfaces`, `SoftSurfaces` | empty | surface names to always treat as road or as dirt |
 | `BlockedItems` | empty | class names (and their subclasses) that may never be loaded |
 | `LoadTime` | | unused: loading is instant |
@@ -115,6 +130,7 @@ blender --background --python blender/build_handcart.py   # the truck, model.cfg
 blender --background --python blender/build_proxies.py    # the load slots' proxy models
 blender --background --python blender/bake_textures.py    # weathered textures
 tools/img2paa.sh textures/*.png HandCart/data              # textures to .paa
+tools/make_sounds.sh                                      # sounds (sources: see the script)
 tools/build.sh                                            # binarize into build/HandCart
 ```
 
@@ -130,7 +146,8 @@ The version comes from a git tag: `workshop_publish.sh` adds a `Version:` line t
 the description and starts the change note with it (`git describe --tags`, so an untagged
 upload shows up as e.g. `v0.2-3-gabc1234`).
 
-1. Commit everything, then tag the release and push the tag:
+1. Date the version's entry in `CHANGELOG.md` (it was "unreleased"), commit everything,
+   then tag the release and push the tag:
 
    ```sh
    git tag -a v0.3 -m "HandCart 0.3: what changed"
@@ -163,7 +180,8 @@ should say something other than the tag).
 
 [`mission/handcart.chernarusplus`](mission/handcart.chernarusplus) is a test
 mission. It lays out one of every load by a road near Balota and parks a loaded
-MS3 on the Chernogorsk docks, where players spawn with a hand truck.
+MS3 on the Chernogorsk docks, where players spawn with a hand truck beside two
+handcuffed survivors to load.
 
 Started with `-missiontest`, it runs headless checks (loading and unloading,
 limits, movement rules, vehicles, dragging) and shuts the server down, logging
