@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3 (work in progress)
+## 0.3 (2026-11-02)
 
 - Sounds: gravel crunching under a rolling loaded truck, clanks from an empty one and
   when loading or unloading, a creak when it's swung round hard (`SoundVolume`).
