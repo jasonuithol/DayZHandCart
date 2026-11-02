@@ -47,15 +47,15 @@ class HandTruckRiders
 		return true;
 	}
 
-	//! Let the rider off where they stand, no questions asked
-	static void ReleaseServer(HandCart_HandTruck_Base truck)
+	//! Let the rider off where they stand, no questions asked (why: for the log)
+	static void ReleaseServer(HandCart_HandTruck_Base truck, string why)
 	{
 		PlayerBase rider = truck.GetRider();
 		truck.SetRiderServer(null);
 		if (rider)
 		{
 			rider.HandCartSetTruckServer(null);
-			Print("[HandCart] " + rider + " let off " + truck);
+			Print("[HandCart] " + rider + " let off " + truck + ": " + why);
 		}
 	}
 
@@ -67,7 +67,7 @@ class HandTruckRiders
 			return false;
 		if (!CanStandThere(pusher, truck, rider, reason))
 			return false;
-		ReleaseServer(truck);
+		ReleaseServer(truck, "unloaded");
 		return true;
 	}
 
@@ -116,22 +116,28 @@ class HandTruckRiders
 			truck.SetRiderServer(null);   // stops the checks
 			return;
 		}
-		if (!StillRiding(truck))
-			ReleaseServer(truck);
+		string why;
+		if (!StillRiding(truck, why))
+			ReleaseServer(truck, why);
 	}
 
-	static bool StillRiding(HandCart_HandTruck_Base truck)
+	static bool StillRiding(HandCart_HandTruck_Base truck, out string why)
 	{
 		PlayerBase rider = truck.GetRider();
 		PlayerBase pusher = truck.GetPusher();
-		if (!HandCartSettings.Get().AllowPeople || !rider || !pusher)
+		why = "people not allowed";
+		if (!HandCartSettings.Get().AllowPeople)
 			return false;
-		if (rider.HandCartGetTruck() != truck)
+		why = "rider or pusher gone";
+		if (!rider || !pusher || rider.HandCartGetTruck() != truck)
 			return false;
+		why = "rider freed, dead or knocked out";
 		if (!rider.IsAlive() || !rider.IsRestrained() || rider.IsUnconscious())
 			return false;
+		why = "pusher dead or knocked out";
 		if (!pusher.IsAlive() || pusher.IsUnconscious())
 			return false;
+		why = "too far from the pusher";
 		return vector.Distance(rider.GetPosition(), pusher.GetPosition()) <= MAX_RIDE_DISTANCE;
 	}
 }
@@ -296,6 +302,18 @@ modded class PlayerBase
 		return true;
 	}
 
+	//! A rider looks the way their body faces (the ride command turns the body with the
+	//! truck): without this their head keeps turning back to where they aimed before
+	override bool HeadingModel(float pDt, SDayZPlayerHeadingModel pModel)
+	{
+		if (HandCartIsRiding())
+		{
+			float diff;
+			return DayZPlayerImplementHeading.NoHeading(pDt, pModel, diff);
+		}
+		return super.HeadingModel(pDt, pModel);
+	}
+
 	override void EEKilled(Object killer)
 	{
 		HandCartLetOff();
@@ -316,7 +334,7 @@ modded class PlayerBase
 			return;
 		HandCart_HandTruck_Base truck = HandCartGetTruck();
 		if (truck && truck.GetRider() == this)
-			HandTruckRiders.ReleaseServer(truck);
+			HandTruckRiders.ReleaseServer(truck, "rider died or left");
 		else
 			HandCartSetTruckServer(null);
 	}

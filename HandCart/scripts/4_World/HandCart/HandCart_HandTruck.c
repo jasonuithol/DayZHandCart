@@ -107,7 +107,7 @@ class HandCart_HandTruck_Base : Inventory_Base
 
 		// Out of the pusher's hands: the rider gets off where they stand
 		if (g_Game.IsServer() && HasRider() && newLoc.GetType() != InventoryLocationType.HANDS)
-			HandTruckRiders.ReleaseServer(this);
+			HandTruckRiders.ReleaseServer(this, "truck left the pusher's hands (to " + typename.EnumToString(InventoryLocationType, newLoc.GetType()) + ")");
 
 		UpdateVisual();
 	}
@@ -147,7 +147,7 @@ class HandCart_HandTruck_Base : Inventory_Base
 	{
 		m_Visual = null;
 		if (g_Game.IsServer() && HasRider())
-			HandTruckRiders.ReleaseServer(this);
+			HandTruckRiders.ReleaseServer(this, "truck deleted");
 		super.EEDelete(parent);
 	}
 

@@ -315,28 +315,33 @@ class CustomMission: MissionServer
 
 	// --- people on hand trucks --------------------------------------------------------------
 
-	//! Two handcuffed survivors on the quay beside the players' spawn, to load onto a hand truck
+	//! Three survivors on the quay beside the players' spawn, to load onto a hand truck: one
+	//! handcuffed, one tied with rope, one with duct tape. Loose rope and tape lie by them.
 	void SetupCaptives()
 	{
 		vector side = Vector(m_DockDir[2], 0, -m_DockDir[0]);
-		for (int i = 0; i < 2; i++)
+		TStringArray restraints = {"HandcuffsLocked", "RopeLocked", "DuctTapeLocked"};
+		for (int i = 0; i < restraints.Count(); i++)
 		{
 			vector pos = m_Dock - m_DockDir * 7 + side * (3 + 1.5 * i);
 			pos[1] = GetGame().SurfaceRoadY(pos[0], pos[2]);
-			PlayerBase captive = Captive(pos);
+			PlayerBase captive = Captive(pos, restraints[i]);
 			if (captive)
 				captive.SetDirection(m_DockDir * -1);
 		}
+		vector loose = m_Dock - m_DockDir * 9 + side * 3;
+		GetGame().CreateObjectEx("Rope", loose, ECE_PLACE_ON_SURFACE);
+		GetGame().CreateObjectEx("DuctTape", loose + side * 0.6, ECE_PLACE_ON_SURFACE);
 	}
 
-	PlayerBase Captive(vector pos)
+	PlayerBase Captive(vector pos, string restraint = "HandcuffsLocked")
 	{
 		PlayerBase captive = PlayerBase.Cast(GetGame().CreatePlayer(null, "SurvivorF_Linda", pos, 0, "NONE"));
 		if (!captive)
 			return null;
 		captive.GetInventory().CreateInInventory("TShirt_Red");
 		captive.GetInventory().CreateInInventory("Jeans_Blue");
-		captive.GetHumanInventory().CreateInHands("HandcuffsLocked");
+		captive.GetHumanInventory().CreateInHands(restraint);
 		captive.SetRestrained(true);
 		return captive;
 	}
@@ -409,6 +414,16 @@ class CustomMission: MissionServer
 		float ahead = vector.Dot(rel, m_Pusher.GetDirection());
 		Check(ahead > 0.3 && ahead < 1.5, "in front of the pusher (" + ahead + " m)");
 		Check(!m_Rider.PhysicsIsSolid(), "rider doesn't collide");
+		InventoryLocation cargo = new InventoryLocation();
+		Check(!m_MS3 || !m_MS3.GetInventory().FindFreeLocationFor(m_PushTruck, FindInventoryLocationType.CARGO, cargo), "a truck with someone on it doesn't fit a vehicle's cargo");
+		InventoryLocation from = new InventoryLocation();
+		m_PushTruck.GetInventory().GetCurrentInventoryLocation(from);
+		InventoryLocation to = new InventoryLocation();
+		to.SetCargo(m_MS3, m_PushTruck, 0, 0, 0, false);
+		Check(!m_MS3 || !GameInventory.LocationCanMoveEntity(from, to), "nor can it be moved there");
+		vector riderDir = m_Rider.GetDirection();
+		vector pusherDir = m_Pusher.GetDirection();
+		Check(vector.Dot(riderDir, pusherDir) > 0.99, "rider faces the way the truck does (" + riderDir + " vs " + pusherDir + ")");
 
 		// The pusher moves on: the rider comes along
 		m_Pusher.SetPosition(RoadFinder.OnSurface(m_Pusher.GetPosition()[0] + m_Along[0] * 3, m_Pusher.GetPosition()[2] + m_Along[2] * 3));
