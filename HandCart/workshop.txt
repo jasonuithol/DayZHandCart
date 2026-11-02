@@ -9,6 +9,7 @@ One kind of load at a time, stacked, contents and all (a full barrel or sea ches
 [*] Power generator: 1
 [*] Canopy tents, packed: 3
 [*] Barrels and fire barrels: 1 (the lid goes on; a fire barrel must be out)
+[*] A person tied up with tape, rope or handcuffs: 1 (they ride standing on the nose plate)
 [*] Expansion safes, locked or not (door shut): 1, with [b]Hand Truck - Expansion Safes[/b]
 [*] Life Machines' stove and sewing machine: 1, with [b]Hand Truck - Life Machines[/b]
 [/list]
@@ -19,6 +20,7 @@ One kind of load at a time, stacked, contents and all (a full barrel or sea ches
 [*] Gravel crunches under a loaded truck as it rolls; an empty one clanks.
 [*] Load: look at something and press F, or drag it onto the truck in your inventory.
 [*] Unload: click for a ghost of the top item, aim it (mouse wheel or Z/X to turn), hold to set it down within 2 m. Or drag it off in the inventory.
+[*] People: holding an empty truck, look at someone tied up and press F. Click to set them down where they stand. They get off by themselves if they're freed, killed or knocked out, or if the truck is dropped.
 [*] Vehicles: F at a vehicle offers to load from it (its slots, like an MS3's barrel and crate slots, then its cargo) or put the top item in. Dragging works too.
 [*] The truck itself fits in any vehicle's cargo.
 [*] Blue, red and yellow, with damaged and ruined looks.
@@ -56,6 +58,8 @@ The server writes [i]$profile:HandCart/HandCartSettings.json[/i] with defaults o
 [*] SoftGroundSpeed (0.6): loaded walking speed off-road (1 = normal walk)
 [*] HoldTiltDegrees, HoldGripForward, HoldLift (50, 0.35, 0.7): how the held truck sits in front of the player
 [*] SoundVolume (1): the truck's rolling and clanking (0 = off)
+[*] AllowPeople (true): tied-up players can be loaded
+[*] PersonTiltDegrees (15): how far a truck carrying a person leans back
 [*] HardSurfaces, SoftSurfaces (empty): surface names to always treat as road, or as dirt
 [*] BlockedItems (empty): class names (and their subclasses) that may never be loaded
 [/list]

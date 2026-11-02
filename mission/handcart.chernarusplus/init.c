@@ -234,6 +234,7 @@ class CustomMission: MissionServer
 		Drop("Hatchback_02_Wheel", Verge(6.6, 8.5));
 
 		SetupDocks();
+		SetupCaptives();
 
 		m_Ready = true;
 		Print("[HandCart] test site ready");
@@ -278,6 +279,8 @@ class CustomMission: MissionServer
 			LogBoxes();
 		if (GetGame().CommandlineGetParam("docks", value))
 			LogDocks();
+		TestPose();
+		TestRider();
 		vector at = Verge(-m_Width / 2 - 1, -12);   // on the road, away from the layout
 		m_Dummy = PlayerBase.Cast(GetGame().CreatePlayer(null, "SurvivorM_Mirek", at, 0, "NONE"));
 		Check(m_Dummy != null, "test survivor created");
@@ -308,6 +311,163 @@ class CustomMission: MissionServer
 			m_Chest.GetInventory().CreateInInventory("Canteen");
 
 		GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(TestHeld, 1000, false);
+	}
+
+	// --- people on hand trucks --------------------------------------------------------------
+
+	//! Two handcuffed survivors on the quay beside the players' spawn, to load onto a hand truck
+	void SetupCaptives()
+	{
+		vector side = Vector(m_DockDir[2], 0, -m_DockDir[0]);
+		for (int i = 0; i < 2; i++)
+		{
+			vector pos = m_Dock - m_DockDir * 7 + side * (3 + 1.5 * i);
+			pos[1] = GetGame().SurfaceRoadY(pos[0], pos[2]);
+			PlayerBase captive = Captive(pos);
+			if (captive)
+				captive.SetDirection(m_DockDir * -1);
+		}
+	}
+
+	PlayerBase Captive(vector pos)
+	{
+		PlayerBase captive = PlayerBase.Cast(GetGame().CreatePlayer(null, "SurvivorF_Linda", pos, 0, "NONE"));
+		if (!captive)
+			return null;
+		captive.GetInventory().CreateInInventory("TShirt_Red");
+		captive.GetInventory().CreateInInventory("Jeans_Blue");
+		captive.GetHumanInventory().CreateInHands("HandcuffsLocked");
+		captive.SetRestrained(true);
+		return captive;
+	}
+
+	//! The truck's pose maths (HandTruckPose), on a spare truck lying on the ground
+	void TestPose()
+	{
+		EntityAI truck = Drop("HandCart_HandTruck_Red", Verge(-m_Width / 2 - 1 + 3, 40));
+		Print("[HandCartTest] memory points: axle " + HandTruckPose.GetAxle(truck) + " handle " + HandTruckPose.GetHandle(truck) + " hub " + truck.GetMemoryPointPos("wheel_l_axis_1"));
+
+		float axleHeight;
+		vector hands;
+		HandTruckPose.GetHands(truck, axleHeight, hands);
+		vector tm[4];
+		HandTruckPose.Solve(truck, false, tm);
+		vector grip = HandTruckPose.Apply(HandTruckPose.GetHandle(truck), tm);
+		vector axle = HandTruckPose.Apply(HandTruckPose.GetAxle(truck), tm);
+		float tilt = Math.Acos(tm[1][1]) * Math.RAD2DEG;
+		Check(vector.Distance(grip, hands) < 0.001 && Math.AbsFloat(axle[1] - axleHeight) < 0.001 && Math.AbsFloat(tilt - 50) < 0.1, "level pose: handle at the hands, wheels on the ground, leaning 50 (" + tilt + ")");
+		HandTruckPose.Solve(truck, true, tm);
+		axle = HandTruckPose.Apply(HandTruckPose.GetAxle(truck), tm);
+		float upright = Math.Acos(tm[1][1]) * Math.RAD2DEG;
+		// the hands are on the rail line (through the handle, along the truck's up)
+		vector top = HandTruckPose.Apply(HandTruckPose.GetHandle(truck), tm);
+		vector off = hands - top;
+		float along = vector.Dot(off, tm[1]);
+		float across = (off - tm[1] * along).Length();
+		Check(Math.AbsFloat(upright - 15) < 0.1 && Math.AbsFloat(axle[1] - axleHeight) < 0.001 && across < 0.001 && along < 0, "carrying a person: leaning 15, hands " + (-along) + " down the rails");
+
+		GetGame().ObjectDelete(truck);
+	}
+
+	protected PlayerBase m_Pusher;
+	protected HandCart_HandTruck_Base m_PushTruck;
+	protected PlayerBase m_Rider;
+	protected bool m_RiderDone;
+	protected vector m_RiderOffset;
+
+	//! Loading a handcuffed survivor onto a hand truck and everything that lets them off
+	void TestRider()
+	{
+		vector at = Verge(-m_Width / 2 - 1, 50);
+		m_Pusher = PlayerBase.Cast(GetGame().CreatePlayer(null, "SurvivorM_Mirek", at, 0, "NONE"));
+		m_PushTruck = HandCart_HandTruck_Base.Cast(m_Pusher.GetHumanInventory().CreateInHands("HandCart_HandTruck_Yellow"));
+		m_Pusher.SetDirection(m_Along);
+		m_Rider = Captive(at + m_Along * 1.2);
+		PlayerBase free = PlayerBase.Cast(GetGame().CreatePlayer(null, "SurvivorM_Mirek", at - m_Along * 1.2, 0, "NONE"));
+
+		string reason;
+		Check(m_Rider && m_Rider.IsRestrained(), "handcuffed survivor");
+		Check(!HandTruckRiders.CanCarry(m_Pusher, m_PushTruck, free, reason), "a free survivor can't be loaded");
+		Check(HandTruckRiders.CanCarry(m_Pusher, m_PushTruck, m_Rider, reason), "a handcuffed one can");
+		Check(HandTruckRiders.LoadServer(m_Pusher, m_PushTruck, m_Rider) && m_PushTruck.HasRider() && m_PushTruck.GetRider() == m_Rider && m_Rider.HandCartIsRiding() && m_Rider.HandCartGetTruck() == m_PushTruck, "loaded onto the truck");
+		Check(m_PushTruck.IsLoaded() && m_Pusher.GetLoadedHandTruck() == m_PushTruck, "the truck counts as loaded (walking pace)");
+		EntityAI crate = Drop("WoodenCrate", at + m_Across * 1.5);
+		Check(!HandTruckRules.CanLoad(m_PushTruck, crate), "nothing else goes on with them");
+		Check(!m_PushTruck.CanPutInCargo(null), "the truck can't go into cargo with them on");
+		GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(TestRiding, 1500, false);
+	}
+
+	void TestRiding()
+	{
+		vector tm[4];
+		m_Rider.HandCartGetRideTransform(tm);
+		float gap = vector.Distance(m_Rider.GetPosition(), tm[3]);
+		vector rel = m_Rider.GetPosition() - m_Pusher.GetPosition();
+		m_RiderOffset = rel;
+		Print("[HandCartTest] rider at " + m_Rider.GetPosition() + " pusher " + m_Pusher.GetPosition() + " ahead " + vector.Dot(rel, m_Pusher.GetDirection()) + " cmd " + m_Rider.GetCurrentCommandID() + " solid " + m_Rider.PhysicsIsSolid());
+		Check(gap < 0.05 && m_Rider.GetCurrentCommandID() == DayZPlayerConstants.COMMANDID_SCRIPT, "riding: on the nose plate (" + gap + " m off)");
+		float ahead = vector.Dot(rel, m_Pusher.GetDirection());
+		Check(ahead > 0.3 && ahead < 1.5, "in front of the pusher (" + ahead + " m)");
+		Check(!m_Rider.PhysicsIsSolid(), "rider doesn't collide");
+
+		// The pusher moves on: the rider comes along
+		m_Pusher.SetPosition(RoadFinder.OnSurface(m_Pusher.GetPosition()[0] + m_Along[0] * 3, m_Pusher.GetPosition()[2] + m_Along[2] * 3));
+		GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(TestRidingMoved, 1000, false);
+	}
+
+	void TestRidingMoved()
+	{
+		vector rel = m_Rider.GetPosition() - m_Pusher.GetPosition();
+		Check(vector.Distance(rel, m_RiderOffset) < 0.2, "follows the pusher (" + vector.Distance(rel, m_RiderOffset) + " m off)");
+
+		string reason;
+		bool unloaded = HandTruckRiders.UnloadServer(m_Pusher, m_PushTruck, reason);
+		Check(unloaded && !m_PushTruck.HasRider() && !m_Rider.HandCartIsRiding(), "unloaded (" + reason + ")");
+		Check(m_Rider.PhysicsIsSolid(), "solid again");
+
+		// Freed: let off
+		Check(HandTruckRiders.LoadServer(m_Pusher, m_PushTruck, m_Rider), "loaded again");
+		m_Rider.SetRestrained(false);
+		GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(TestRiderFreed, 1200, false);
+	}
+
+	void TestRiderFreed()
+	{
+		Check(!m_PushTruck.HasRider() && !m_Rider.HandCartIsRiding(), "freed: let off");
+		Check(m_Rider.GetCurrentCommandID() != DayZPlayerConstants.COMMANDID_SCRIPT, "walking again (command " + m_Rider.GetCurrentCommandID() + ")");
+
+		// Truck dropped: let off
+		m_Rider.SetRestrained(true);
+		Check(HandTruckRiders.LoadServer(m_Pusher, m_PushTruck, m_Rider), "loaded a third time");
+		// What a drop ends in: the truck moved from hands to the ground
+		InventoryLocation src = new InventoryLocation();
+		m_PushTruck.GetInventory().GetCurrentInventoryLocation(src);
+		InventoryLocation dst = new InventoryLocation();
+		vector ground[4];
+		Math3D.MatrixIdentity4(ground);
+		ground[3] = m_Pusher.GetPosition() + m_Along;
+		dst.SetGround(m_PushTruck, ground);
+		Check(GameInventory.LocationSyncMoveEntity(src, dst), "truck dropped");
+		GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(TestRiderDropped, 1000, false);
+	}
+
+	void TestRiderDropped()
+	{
+		Check(!m_PushTruck.HasRider() && !m_Rider.HandCartIsRiding() && !m_PushTruck.GetHierarchyParent(), "truck dropped: let off");
+
+		// Killed: let off
+		m_Pusher.GetHumanInventory().CreateInHands("HandCart_HandTruck_Blue");
+		HandCart_HandTruck_Base truck = HandCart_HandTruck_Base.Cast(m_Pusher.GetItemInHands());
+		Check(truck && HandTruckRiders.LoadServer(m_Pusher, truck, m_Rider), "loaded onto another truck");
+		m_PushTruck = truck;
+		m_Rider.SetHealth("", "", 0);
+		GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(TestRiderKilled, 1000, false);
+	}
+
+	void TestRiderKilled()
+	{
+		Check(!m_PushTruck.HasRider() && !m_Rider.HandCartIsRiding(), "killed: let off");
+		m_RiderDone = true;
 	}
 
 	//! Pier and crane objects along the south coast, for finding somewhere flat by the sea
@@ -552,6 +712,11 @@ class CustomMission: MissionServer
 
 	void Finish()
 	{
+		if (!m_RiderDone)
+		{
+			GetGame().GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(Finish, 500, false);
+			return;
+		}
 		Print("[HandCartTest] done, " + m_Failures + " failures");
 		GetGame().RequestExit(0);
 	}

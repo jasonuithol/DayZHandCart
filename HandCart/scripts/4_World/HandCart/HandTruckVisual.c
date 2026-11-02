@@ -1,7 +1,8 @@
 //! Client: the hand truck as drawn while someone holds it. The real truck stays the item
 //! in their hands (inventory, saving and the actions all work on it) but is hidden; this
 //! puts a local copy, with copies of the load, in front of the player, leaning back onto
-//! its wheels, attached to the player so it moves with them. It also makes the truck's
+//! its wheels (more upright while a person rides it), attached to the player so it moves
+//! with them. It also makes the truck's
 //! sounds: gravel crunching while it rolls loaded, clanks while it rolls empty, a creak
 //! when it's swung round hard.
 class HandTruckVisual
@@ -24,6 +25,7 @@ class HandTruckVisual
 	protected float m_ClankTimer;
 	protected float m_CreakTimer;
 	protected EffectSound m_Rolling;
+	protected bool m_HadRider;        //!< the copy is placed for a person riding
 
 	void HandTruckVisual(HandCart_HandTruck_Base truck, PlayerBase player)
 	{
@@ -41,11 +43,7 @@ class HandTruckVisual
 			m_Copy.SetObjectTexture(0, textures[0]);
 		SyncHealth();
 
-		// Local transform, then attach: the transform becomes relative to the player
-		vector transform[4];
-		GetHeldTransform(m_Copy, transform);
-		m_Copy.SetTransform(transform);
-		player.AddChild(m_Copy, -1);
+		Place();
 
 		m_LastPos = player.GetPosition();
 		m_LastDir = player.GetDirection();
@@ -83,37 +81,24 @@ class HandTruckVisual
 		return m_Player;
 	}
 
+	//! Put the copy in front of the player (HandTruckPose): more upright while a person rides.
+	//! Local transform, then attach: the transform becomes relative to the player.
+	protected void Place()
+	{
+		vector transform[4];
+		m_HadRider = m_Truck.HasRider();
+		HandTruckPose.Solve(m_Copy, m_HadRider, transform);
+		if (m_Copy.GetParent() == m_Player)
+			m_Player.RemoveChild(m_Copy);
+		m_Copy.SetTransform(transform);
+		m_Player.AddChild(m_Copy, -1);
+		m_Player.Update();
+	}
+
 	protected void Hide()
 	{
 		if (m_Player && m_Player.GetItemAccessor() && !m_Player.GetItemAccessor().IsItemInHandsHidden())
 			m_Player.GetItemAccessor().HideItemInHands(true);
-	}
-
-	//! The truck's transform in the player's model space (x right, y up, z forward): nose
-	//! plate forward, leaning back by HoldTiltDegrees, wheels HoldLift above the player's
-	//! origin and the grip HoldGripForward ahead. In the truck model the nose points down -z.
-	static void GetHeldTransform(EntityAI truck, out vector transform[4])
-	{
-		HandCartSettings settings = HandCartSettings.Get();
-		float tilt = settings.HoldTiltDegrees * Math.DEG2RAD;
-		float c = Math.Cos(tilt);
-		float s = Math.Sin(tilt);
-		transform[1] = Vector(0, c, -s);    // truck up: leaning back towards the player
-		transform[2] = Vector(0, -s, -c);   // truck z: nose (-z) forward and tipped up
-		transform[0] = "-1 0 0";            // truck x: completes the frame (up x z)
-
-		// Axle midway between the wheel axis points, grip at the "handle" memory point
-		vector axle = (truck.GetMemoryPointPos("wheel_l_axis_1") + truck.GetMemoryPointPos("wheel_r_axis_2")) * 0.5;
-		vector grip = truck.GetMemoryPointPos("handle");
-		vector gripFromAxle = Rotate(grip - axle, transform);
-		vector axleAt = Vector(0, axle[1] + settings.HoldLift, settings.HoldGripForward - gripFromAxle[2]);
-		transform[3] = axleAt - Rotate(axle, transform);
-	}
-
-	//! A truck-space direction in the player's space
-	static vector Rotate(vector v, vector transform[4])
-	{
-		return transform[0] * v[0] + transform[1] * v[1] + transform[2] * v[2];
 	}
 
 	//! Draw the copy's frame worn the same as the real truck (config.cpp healthLevels). The
@@ -152,6 +137,8 @@ class HandTruckVisual
 			return;
 
 		SetLoadInvisible(m_Truck, true);
+		if (m_HadRider != m_Truck.HasRider())
+			Place();
 
 		GameInventory copyInv = m_Copy.GetInventory();
 		for (int i = copyInv.AttachmentCount() - 1; i >= 0; i--)

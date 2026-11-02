@@ -28,9 +28,15 @@ them one at a time: safes, sea chests, crates, barrels, wheels, a generator, ten
   | Barrel or fire barrel (lid goes on; a fire barrel must be out) | 1 |
   | Life Machines stove (not while cooking) | 1 |
   | Life Machines sewing machine (not while sewing) | 1 |
+  | A person tied up with tape, rope or handcuffs | 1 |
 
   Containers keep their contents; a full barrel or sea chest stays full.
 - **Sounds.** A loaded truck crunches over gravel as it rolls; an empty one clanks.
+- **People.** Holding an empty truck, look at a tied-up player and press **F**. They ride
+  standing on the nose plate; the truck leans back less (a body can't be tilted). Click
+  to set them down where they stand, if there's room and you can see the spot. They get
+  off by themselves if they're freed, killed or knocked out, or if the truck leaves your
+  hands.
 - **Unloading.** Click to bring up a ghost of the top item, aim it (mouse wheel
   or Z/X to turn it), and hold to set it down. You stand still while choosing a
   spot. The spot must be within 2 m, not too steep, and in sight. Or drag the
@@ -99,6 +105,8 @@ first start and sends it to every client.
 | `SoftGroundSpeed` | 0.6 | loaded speed off-road (1 = walking) |
 | `HoldTiltDegrees`, `HoldGripForward`, `HoldLift` | 50, 0.35, 0.7 | how the held truck sits in front of the player |
 | `SoundVolume` | 1 | rolling and clanking (0 = off) |
+| `AllowPeople` | true | tied-up players can be loaded |
+| `PersonTiltDegrees` | 15 | how far a truck carrying a person leans back |
 | `HardSurfaces`, `SoftSurfaces` | empty | surface names to always treat as road or as dirt |
 | `BlockedItems` | empty | class names (and their subclasses) that may never be loaded |
 | `LoadTime` | | unused: loading is instant |
@@ -167,7 +175,8 @@ should say something other than the tag).
 
 [`mission/handcart.chernarusplus`](mission/handcart.chernarusplus) is a test
 mission. It lays out one of every load by a road near Balota and parks a loaded
-MS3 on the Chernogorsk docks, where players spawn with a hand truck.
+MS3 on the Chernogorsk docks, where players spawn with a hand truck beside two
+handcuffed survivors to load.
 
 Started with `-missiontest`, it runs headless checks (loading and unloading,
 limits, movement rules, vehicles, dragging) and shuts the server down, logging

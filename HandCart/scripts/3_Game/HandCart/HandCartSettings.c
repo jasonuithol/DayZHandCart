@@ -19,6 +19,8 @@ class HandCartSettings
 	float HoldGripForward;      //!< metres in front of the player the held truck's grip is
 	float HoldLift;             //!< metres the held truck is raised above the player's feet
 	float SoundVolume;          //!< rolling and clanking sounds: 1 = normal, 0 = off
+	bool AllowPeople;           //!< tied-up players can be loaded
+	float PersonTiltDegrees;    //!< how far a truck carrying a person leans back (bodies stay upright)
 	ref array<string> HardSurfaces;   //!< surface names always treated as road
 	ref array<string> SoftSurfaces;   //!< surface names always treated as dirt
 	ref array<string> BlockedItems;   //!< class names (subclasses too) that may never be loaded
@@ -38,6 +40,8 @@ class HandCartSettings
 		HoldGripForward = 0.35;
 		HoldLift = 0.7;
 		SoundVolume = 1.0;
+		AllowPeople = true;
+		PersonTiltDegrees = 15.0;
 		HardSurfaces = {};
 		SoftSurfaces = {};
 		BlockedItems = {};
@@ -94,6 +98,8 @@ class HandCartSettings
 		ctx.Write(HoldGripForward);
 		ctx.Write(HoldLift);
 		ctx.Write(SoundVolume);
+		ctx.Write(AllowPeople);
+		ctx.Write(PersonTiltDegrees);
 		ctx.Write(HardSurfaces);
 		ctx.Write(SoftSurfaces);
 		ctx.Write(BlockedItems);
@@ -108,7 +114,7 @@ class HandCartSettings
 			return false;
 		if (!ctx.Read(HoldTiltDegrees) || !ctx.Read(HoldGripForward) || !ctx.Read(HoldLift))
 			return false;
-		if (!ctx.Read(SoundVolume))
+		if (!ctx.Read(SoundVolume) || !ctx.Read(AllowPeople) || !ctx.Read(PersonTiltDegrees))
 			return false;
 		return ctx.Read(HardSurfaces) && ctx.Read(SoftSurfaces) && ctx.Read(BlockedItems);
 	}
