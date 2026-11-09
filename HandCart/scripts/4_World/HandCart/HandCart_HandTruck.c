@@ -8,6 +8,7 @@ class HandCart_HandTruck_Base : Inventory_Base
 	static const float WATCH_INTERVAL = 500;   //!< ms between the server's checks on a rider
 
 	protected ref HandTruckVisual m_Visual;   //!< client: the copy drawn while the truck is held
+	protected PlayerBase m_HiddenIn;          //!< server: whose hands it is hidden in
 	protected int m_RiderLow;                 //!< network id of the person riding it, 0 0 if none
 	protected int m_RiderHigh;
 	protected bool m_HadRider;
@@ -146,6 +147,8 @@ class HandCart_HandTruck_Base : Inventory_Base
 	override void EEDelete(EntityAI parent)
 	{
 		m_Visual = null;
+		if (g_Game.IsServer())
+			HideInHandsServer(null);
 		if (g_Game.IsServer() && HasRider())
 			HandTruckRiders.ReleaseServer(this, "truck deleted");
 		super.EEDelete(parent);
@@ -156,12 +159,21 @@ class HandCart_HandTruck_Base : Inventory_Base
 	//! no model trick turned into a believable push)
 	void UpdateVisual()
 	{
-		if (g_Game.IsDedicatedServer())
-			return;
-
 		InventoryLocation loc = new InventoryLocation();
 		bool held = GetInventory().GetCurrentInventoryLocation(loc) && loc.GetType() == InventoryLocationType.HANDS;
 		PlayerBase player = PlayerBase.Cast(loc.GetParent());
+
+		if (g_Game.IsServer())
+		{
+			if (held)
+				HideInHandsServer(player);
+			else
+				HideInHandsServer(null);
+		}
+
+		if (g_Game.IsDedicatedServer())
+			return;
+
 		if (held && player)
 		{
 			if (!m_Visual || m_Visual.GetPlayer() != player)
@@ -171,6 +183,32 @@ class HandCart_HandTruck_Base : Inventory_Base
 		{
 			m_Visual = null;
 		}
+	}
+
+	//! Server: hide the truck in this player's hands, or stop with null. Other players'
+	//! machines take the hidden state from the server, the way vanilla's own hiding reaches
+	//! them, so hiding it only on clients leaves the real truck drawn beside the copy.
+	protected void HideInHandsServer(PlayerBase player)
+	{
+		if (m_HiddenIn == player)
+			return;
+
+		if (m_HiddenIn && m_HiddenIn.GetItemAccessor())
+			m_HiddenIn.GetItemAccessor().HideItemInHands(false);
+
+		g_Game.GetCallQueue(CALL_CATEGORY_GAMEPLAY).Remove(KeepHiddenServer);
+		m_HiddenIn = player;
+		if (!player)
+			return;
+
+		KeepHiddenServer();
+		g_Game.GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(KeepHiddenServer, HandTruckVisual.REHIDE_INTERVAL, true);
+	}
+
+	protected void KeepHiddenServer()
+	{
+		if (m_HiddenIn && m_HiddenIn.GetItemAccessor() && !m_HiddenIn.GetItemAccessor().IsItemInHandsHidden())
+			m_HiddenIn.GetItemAccessor().HideItemInHands(true);
 	}
 
 	override void SetActions()

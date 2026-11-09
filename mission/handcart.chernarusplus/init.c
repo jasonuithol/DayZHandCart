@@ -469,6 +469,7 @@ class CustomMission: MissionServer
 	void TestRiderDropped()
 	{
 		Check(!m_PushTruck.HasRider() && !m_Rider.HandCartIsRiding() && !m_PushTruck.GetHierarchyParent(), "truck dropped: let off");
+		Check(!m_Pusher.GetItemAccessor().IsItemInHandsHidden(), "truck dropped: the server no longer hides the pusher's hands");
 
 		// Killed: let off
 		m_Pusher.GetHumanInventory().CreateInHands("HandCart_HandTruck_Blue");
@@ -534,6 +535,7 @@ class CustomMission: MissionServer
 
 	void TestHeld()
 	{
+		Check(m_Dummy.GetItemAccessor().IsItemInHandsHidden(), "held truck is hidden on the server too, so other players don't see it");
 		SHumanCommandClimbResult climb = new SHumanCommandClimbResult();
 		Check(!m_Dummy.CanSprint() && !m_Dummy.CanJump() && !m_Dummy.CanClimb(0, climb), "empty truck: no sprint, no jump, no climbing");
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1 (2026-11-09)
+
+- Other players no longer see a second truck hanging off the hand of someone pushing one:
+  the real truck is now hidden on the server as well as on clients.
+
 ## 0.3 (2026-11-02)
 
 - Sounds: gravel crunching under a rolling loaded truck, clanks from an empty one and
